@@ -1,6 +1,6 @@
 # citygen-godot
 
-Source code for the interactive procedural city generation algorithm described [here](http://tmwhere.com/city_generation.html), ported to Godot 3 using GDScript.
+Source code for the interactive procedural city generation algorithm described [here](http://tmwhere.com/city_generation.html), ported to Godot 3 using GDScript. This fork makes some minor API changes to work with Godot 4.2.
 
 ![Screenshot](screen.png)
 
