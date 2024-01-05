@@ -10,7 +10,20 @@ const CityGen = preload("res://scripts/city_gen.gd")
 var generated_segments = []
 var generated_buildings = []
 
+func populate_options_values():
+	get_node("../UI/OptionsDialogue/SegmentsInput")\
+		.set_text(str(Options.SEGMENT_COUNT_LIMIT))
+	get_node("../UI/OptionsDialogue/BuildingDensityInput")\
+		.set_text(str(Options.BUILDING_COUNT_PER_SEGMENT))
+	get_node("../UI/OptionsDialogue/BuildingFrequencyInput")\
+		.set_text(str(Options.BUILDING_SEGMENT_PERIOD))
+	get_node("../UI/OptionsDialogue/SegmentLengthInput")\
+		.set_text(str(Options.DEFAULT_SEGMENT_LENGTH))
+	get_node("../UI/OptionsDialogue/HighwaySegmentLengthInput")\
+		.set_text(str(Options.HIGHWAY_SEGMENT_LENGTH))
+
 func _ready():
+	populate_options_values()
 	randomize()
 	run()
 
@@ -40,3 +53,18 @@ func _on_GenerateButton_pressed():
 
 func _on_HeatmapCheckbox_toggled(button_pressed):
 	population_heatmap.visible = button_pressed
+
+func _on_segments_input_text_changed(new_value):
+	Options.SEGMENT_COUNT_LIMIT = new_value
+
+func _on_building_density_input_text_changed(new_value):
+	Options.BUILDING_COUNT_PER_SEGMENT = new_value
+
+func _on_building_frequency_input_text_changed(new_value):
+	Options.BUILDING_SEGMENT_PERIOD = new_value
+
+func _on_segment_length_input_text_changed(new_value):
+	Options.DEFAULT_SEGMENT_LENGTH = new_value
+
+func _on_highway_segment_length_input_text_changed(new_value):
+	Options.HIGHWAY_SEGMENT_LENGTH = new_value

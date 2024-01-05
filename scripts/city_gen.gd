@@ -2,19 +2,14 @@
 
 extends Node2D
 
-# generate this number of segments - a higher limit produces larger networks
-@export var segment_count_limit := 2000
+# FIXME - Expose some/all of these as UI options:
 
 # a segment branching off at a 90 degree angle from an existing segment can vary its direction by +/- this amount
-const BRANCH_ANGLE_DEVIATION := 3.0 # degrees
+const BRANCH_ANGLE_DEVIATION := 3 # degrees
 # a segment continuing straight ahead from an existing segment can vary its direction by +/- this amount
-const STRAIGHT_ANGLE_DEVIATION := 15.0 # degrees
+const STRAIGHT_ANGLE_DEVIATION := 15 # degrees
 # segments are allowed to intersect if they have a large enough difference in direction - this helps enforce grid-like networks
-const MINIMUM_INTERSECTION_DEVIATION := 30.0 # degrees
-# try to produce 'normal' segments with this length if possible
-const DEFAULT_SEGMENT_LENGTH := 300 # world units
-# try to produce 'highway' segments with this length if possible
-const HIGHWAY_SEGMENT_LENGTH := 400 # world units
+const MINIMUM_INTERSECTION_DEVIATION := 30 # degrees
 # each 'normal' segment has this probability of producing a branching segment
 const DEFAULT_BRANCH_PROBABILITY := 0.4
 # each 'highway' segment has this probability of producing a branching segment
@@ -27,11 +22,6 @@ const HIGHWAY_BRANCH_POPULATION_THRESHOLD := 0.5
 const NORMAL_BRANCH_TIME_DELAY_FROM_HIGHWAY := 5
 # allow a segment to intersect with an existing segment within this distance
 const MAX_SNAP_DISTANCE := 50 # world units
-
-# select every nth segment to place buildings around - a lower period produces denser building placement
-const BUILDING_SEGMENT_PERIOD := 5
-# the number of buildings to generate per selected segment
-const BUILDING_COUNT_PER_SEGMENT := 10
 # the maximum distance that a building can be placed from a selected segment
 const MAX_BUILDING_DISTANCE_FROM_SEGMENT := 400.0 # world units
 
@@ -61,17 +51,17 @@ func generate_segments() -> Array:
 
 	var root_metadata := SegmentMetadata.new();
 	root_metadata.highway = true;
-	var root_segment := Segment.new(Vector2(0, 0), Vector2(HIGHWAY_SEGMENT_LENGTH, 0), 0, root_metadata)
+	var root_segment := Segment.new(Vector2(0, 0), Vector2(Options.HIGHWAY_SEGMENT_LENGTH, 0), 0, root_metadata)
 
 	var opposite_direction := root_segment.clone()
-	var new_end := Vector2(root_segment.start.x - HIGHWAY_SEGMENT_LENGTH, opposite_direction.end.y);
+	var new_end := Vector2(root_segment.start.x - Options.HIGHWAY_SEGMENT_LENGTH, opposite_direction.end.y);
 	opposite_direction.end = new_end
 	opposite_direction.links_b.append(root_segment)
 	root_segment.links_b.append(opposite_direction)
 	priority_q.append(root_segment)
 	priority_q.append(opposite_direction)
 
-	while len(priority_q) > 0 && len(segments) < segment_count_limit:
+	while len(priority_q) > 0 && len(segments) < Options.SEGMENT_COUNT_LIMIT:
 		# pop smallest r(ti, ri, qi) from Q (i.e., smallest ‘t’)
 		var min_t = null
 		var min_t_i: int = 0
@@ -284,16 +274,16 @@ class GlobalGoalsTemplate:
 	# used for branches extending from highways i.e. not highways themselves
 	func segment_branch(direction: float) -> Segment:
 		var t := NORMAL_BRANCH_TIME_DELAY_FROM_HIGHWAY if self.previous_segment.metadata.highway else 0
-		return self.segment(direction, DEFAULT_SEGMENT_LENGTH, t, SegmentMetadata.new())
+		return self.segment(direction, Options.DEFAULT_SEGMENT_LENGTH, t, SegmentMetadata.new())
 
 const BUILDING_PLACEMENT_LOOP_LIMIT := 3
 func generate_buildings(segments: Array) -> Array:
 	var buildings = []
 
-	for i in range(0, len(segments), BUILDING_SEGMENT_PERIOD):
+	for i in range(0, len(segments), Options.BUILDING_SEGMENT_PERIOD):
 		var segment: Segment = segments[i]
 
-		for _b in range(0, BUILDING_COUNT_PER_SEGMENT):
+		for _b in range(0, Options.BUILDING_COUNT_PER_SEGMENT):
 			var random_angle = randf() * 360.0
 			var random_radius = randf() * MAX_BUILDING_DISTANCE_FROM_SEGMENT
 
