@@ -3,7 +3,7 @@ static func random_angle(limit: float) -> float:
     var non_uniform_norm := pow(limit, 3)
     var val: float = 0
     while val == 0 || randf() < pow(val, 3) / non_uniform_norm:
-        val = rand_range(-limit, +limit)
+        val = randf_range(-limit, +limit)
     return val
 
 static func min_degree_difference(d1: float, d2: float) -> float:
