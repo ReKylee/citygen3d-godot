@@ -21,6 +21,24 @@ func populate_options_values():
 		.set_text(str(Options.DEFAULT_SEGMENT_LENGTH))
 	get_node("../UI/OptionsDialogue/HighwaySegmentLengthInput")\
 		.set_text(str(Options.HIGHWAY_SEGMENT_LENGTH))
+	get_node("../UI/OptionsDialogue/DefaultBranchProbabilityInput")\
+		.set_text(str(Options.DEFAULT_BRANCH_PROBABILITY))
+	get_node("../UI/OptionsDialogue/HighwayBranchProbabilityInput")\
+		.set_text(str(Options.HIGHWAY_BRANCH_PROBABILITY))
+	get_node("../UI/OptionsDialogue/BranchAngleDeviationInput")\
+		.set_text(str(Options.BRANCH_ANGLE_DEVIATION))
+	get_node("../UI/OptionsDialogue/StraightAngleDeviationInput")\
+		.set_text(str(Options.STRAIGHT_ANGLE_DEVIATION))
+	get_node("../UI/OptionsDialogue/MinIntersectionDeviationInput")\
+		.set_text(str(Options.MINIMUM_INTERSECTION_DEVIATION))
+	get_node("../UI/OptionsDialogue/BranchPopulationThresholdInput")\
+		.set_text(str(Options.NORMAL_BRANCH_POPULATION_THRESHOLD))
+	get_node("../UI/OptionsDialogue/HighwayPopulationThresholdInput")\
+		.set_text(str(Options.HIGHWAY_BRANCH_POPULATION_THRESHOLD))
+	get_node("../UI/OptionsDialogue/MaxSnapDistanceInput")\
+		.set_text(str(Options.MAX_SNAP_DISTANCE))
+	get_node("../UI/OptionsDialogue/MaxBuildingDistanceInput")\
+		.set_text(str(Options.MAX_BUILDING_DISTANCE_FROM_SEGMENT))
 
 func _ready():
 	populate_options_values()
@@ -68,3 +86,30 @@ func _on_segment_length_input_text_changed(new_value):
 
 func _on_highway_segment_length_input_text_changed(new_value):
 	Options.HIGHWAY_SEGMENT_LENGTH = new_value
+
+func _on_default_branch_probability_input_text_changed(new_value):
+	Options.DEFAULT_BRANCH_PROBABILITY = new_value
+
+func _on_highway_branch_probability_input_text_changed(new_value):
+	Options.HIGHWAY_BRANCH_PROBABILITY = new_value
+
+func _on_branch_angle_deviation_input_text_changed(new_value):
+	Options.BRANCH_ANGLE_DEVIATION = new_value
+
+func _on_straight_angle_deviation_input_text_changed(new_value):
+	Options.STRAIGHT_ANGLE_DEVIATION = new_value
+
+func _on_min_intersection_deviation_input_text_changed(new_value):
+	Options.MINIMUM_INTERSECTION_DEVIATION = new_value
+
+func _on_branch_population_threshold_input_text_changed(new_value):
+	Options.NORMAL_BRANCH_POPULATION_THRESHOLD = new_value
+
+func _on_highway_population_threshold_input_text_changed(new_value):
+	Options.HIGHWAY_BRANCH_POPULATION_THRESHOLD = new_value
+
+func _on_max_snap_distance_input_text_changed(new_value):
+	Options.MAX_SNAP_DISTANCE = new_value
+
+func _on_max_building_distance_input_text_changed(new_value):
+	Options.MAX_BUILDING_DISTANCE_FROM_SEGMENT = new_value

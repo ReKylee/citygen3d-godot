@@ -2,34 +2,13 @@
 
 extends Node2D
 
-# FIXME - Expose some/all of these as UI options:
-
-# a segment branching off at a 90 degree angle from an existing segment can vary its direction by +/- this amount
-const BRANCH_ANGLE_DEVIATION := 3 # degrees
-# a segment continuing straight ahead from an existing segment can vary its direction by +/- this amount
-const STRAIGHT_ANGLE_DEVIATION := 15 # degrees
-# segments are allowed to intersect if they have a large enough difference in direction - this helps enforce grid-like networks
-const MINIMUM_INTERSECTION_DEVIATION := 30 # degrees
-# each 'normal' segment has this probability of producing a branching segment
-const DEFAULT_BRANCH_PROBABILITY := 0.4
-# each 'highway' segment has this probability of producing a branching segment
-const HIGHWAY_BRANCH_PROBABILITY := 0.05
-# only place 'normal' segments when the population is high enough
-const NORMAL_BRANCH_POPULATION_THRESHOLD := 0.5
-# only place 'highway' segments when the population is high enough
-const HIGHWAY_BRANCH_POPULATION_THRESHOLD := 0.5
-# delay branching from 'highways' by this amount to prevent them from being blocked by 'normal' segments
-const NORMAL_BRANCH_TIME_DELAY_FROM_HIGHWAY := 5
-# allow a segment to intersect with an existing segment within this distance
-const MAX_SNAP_DISTANCE := 50 # world units
-# the maximum distance that a building can be placed from a selected segment
-const MAX_BUILDING_DISTANCE_FROM_SEGMENT := 400.0 # world units
-
 func random_branch_angle() -> float:
-	return Math.random_angle(BRANCH_ANGLE_DEVIATION)
+	return 0 if Options.BRANCH_ANGLE_DEVIATION <= 0\
+		else Math.random_angle(Options.BRANCH_ANGLE_DEVIATION)
 
 func random_straight_angle() -> float:
-	return Math.random_angle(STRAIGHT_ANGLE_DEVIATION)
+	return 0 if Options.STRAIGHT_ANGLE_DEVIATION <= 0\
+		else Math.random_angle(Options.STRAIGHT_ANGLE_DEVIATION)
 
 const Building = preload("res://scripts/building.gd")
 const Heatmap = preload("res://scripts/heatmap.gd")
@@ -98,7 +77,7 @@ func local_constraints(segment: Segment, segments: Array) -> bool:
 	query.collide_with_bodies = false
 	query.collide_with_areas = true
 	var shape = CircleShape2D.new()
-	shape.radius = segment.length * 0.5 + MAX_SNAP_DISTANCE
+	shape.radius = segment.length * 0.5 + Options.MAX_SNAP_DISTANCE
 	query.shape_rid = shape.get_rid()
 	query.transform = segment.calculate_physics_shape_transform()
 
@@ -124,7 +103,7 @@ func local_constraints(segment: Segment, segments: Array) -> bool:
 		if action_priority <= 3:
 			# current segment's start must have been checked to have been created.
 			# other segment's start must have a corresponding end.
-			if segment.end.distance_squared_to(other.end) <= MAX_SNAP_DISTANCE * MAX_SNAP_DISTANCE:
+			if segment.end.distance_squared_to(other.end) <= Options.MAX_SNAP_DISTANCE * Options.MAX_SNAP_DISTANCE:
 				action_priority = 3
 				action = LocalConstraintsSnapAction.new(other, other.end)
 
@@ -133,7 +112,7 @@ func local_constraints(segment: Segment, segments: Array) -> bool:
 			if Math.is_point_in_segment_range(segment.end, other.start, other.end):
 				var intersection := Geometry2D.get_closest_point_to_segment(segment.end, other.start, other.end)
 				var distance_squared := segment.end.distance_squared_to(intersection)
-				if distance_squared < MAX_SNAP_DISTANCE * MAX_SNAP_DISTANCE:
+				if distance_squared < Options.MAX_SNAP_DISTANCE * Options.MAX_SNAP_DISTANCE:
 					action_priority = 2
 					action = LocalConstraintsIntersectionRadiusAction.new(other, intersection)
 
@@ -154,7 +133,7 @@ class LocalConstraintsIntersectionAction:
 
 	func apply(segment: Segment, segments: Array) -> bool:
 		# if intersecting lines are too similar don't continue
-		if Math.min_degree_difference(self.other.direction, segment.direction) < MINIMUM_INTERSECTION_DEVIATION:
+		if Math.min_degree_difference(self.other.direction, segment.direction) < Options.MINIMUM_INTERSECTION_DEVIATION:
 			return false
 		self.other.split(self.intersection, segment, segments)
 		segment.end = self.intersection
@@ -209,7 +188,7 @@ class LocalConstraintsIntersectionRadiusAction:
 		segment.end = self.intersection
 		segment.metadata.severed = true
 		# if intersecting lines are too similar don't continue
-		if Math.min_degree_difference(self.other.direction, segment.direction) < MINIMUM_INTERSECTION_DEVIATION:
+		if Math.min_degree_difference(self.other.direction, segment.direction) < Options.MINIMUM_INTERSECTION_DEVIATION:
 			return false
 		self.other.split(self.intersection, segment, segments)
 		return true
@@ -232,20 +211,20 @@ func global_goals_generate(previous_segment: Segment) -> Array:
 			else:
 				new_branches.append(continue_straight)
 				road_pop = straight_pop
-			if road_pop > HIGHWAY_BRANCH_POPULATION_THRESHOLD:
-				if randf() < HIGHWAY_BRANCH_PROBABILITY:
+			if road_pop > Options.HIGHWAY_BRANCH_POPULATION_THRESHOLD:
+				if randf() < Options.HIGHWAY_BRANCH_PROBABILITY:
 					var left_highway_branch = template.segment_continue(previous_segment.direction - 90 + random_branch_angle())
 					new_branches.append(left_highway_branch)
-				elif randf() < HIGHWAY_BRANCH_PROBABILITY:
+				elif randf() < Options.HIGHWAY_BRANCH_PROBABILITY:
 					var right_highway_branch = template.segment_continue(previous_segment.direction + 90 + random_branch_angle())
 					new_branches.append(right_highway_branch)
-		elif straight_pop > NORMAL_BRANCH_POPULATION_THRESHOLD:
+		elif straight_pop > Options.NORMAL_BRANCH_POPULATION_THRESHOLD:
 			new_branches.append(continue_straight)
-		if straight_pop > NORMAL_BRANCH_POPULATION_THRESHOLD:
-			if randf() < DEFAULT_BRANCH_PROBABILITY:
+		if straight_pop > Options.NORMAL_BRANCH_POPULATION_THRESHOLD:
+			if randf() < Options.DEFAULT_BRANCH_PROBABILITY:
 				var left_branch = template.segment_branch(previous_segment.direction - 90 + random_branch_angle())
 				new_branches.append(left_branch)
-			elif randf() < DEFAULT_BRANCH_PROBABILITY:
+			elif randf() < Options.DEFAULT_BRANCH_PROBABILITY:
 				var right_branch = template.segment_branch(previous_segment.direction + 90 + random_branch_angle())
 				new_branches.append(right_branch)
 
@@ -273,7 +252,7 @@ class GlobalGoalsTemplate:
 
 	# used for branches extending from highways i.e. not highways themselves
 	func segment_branch(direction: float) -> Segment:
-		var t := NORMAL_BRANCH_TIME_DELAY_FROM_HIGHWAY if self.previous_segment.metadata.highway else 0
+		var t := Options.NORMAL_BRANCH_TIME_DELAY_FROM_HIGHWAY if self.previous_segment.metadata.highway else 0
 		return self.segment(direction, Options.DEFAULT_SEGMENT_LENGTH, t, SegmentMetadata.new())
 
 const BUILDING_PLACEMENT_LOOP_LIMIT := 3
@@ -285,7 +264,7 @@ func generate_buildings(segments: Array) -> Array:
 
 		for _b in range(0, Options.BUILDING_COUNT_PER_SEGMENT):
 			var random_angle = randf() * 360.0
-			var random_radius = randf() * MAX_BUILDING_DISTANCE_FROM_SEGMENT
+			var random_radius = randf() * Options.MAX_BUILDING_DISTANCE_FROM_SEGMENT
 
 			var building = Building.new()
 			building.center = (segment.start + segment.end) * 0.5
