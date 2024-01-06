@@ -2,9 +2,9 @@
 
 Source code for the interactive procedural city generation algorithm described [here](http://tmwhere.com/city_generation.html), ported to Godot 4.2 using GDScript.
 
-![Screenshot #1](screen.png)
+![Screenshot #1](doc/screen.png)
 
-![Screenshot #2](screen_with_options.png)
+![Screenshot #2](doc/screen_with_options.png)
 
 Exported to HTML5 at https://t-mw.github.io/citygen-godot/.
 
