@@ -10,8 +10,9 @@ Exported to HTML5 at https://t-mw.github.io/citygen-godot/.
 
 ## Controls
 
-- Drag to pan
+- Drag (right mouse button) to pan
 - Scroll to zoom
+- Set generation options in options menu
 
 ## Structure
 

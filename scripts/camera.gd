@@ -22,7 +22,7 @@ extends Camera2D
 
 # Camera control settings:
 # key - by keyboard
-# drag - by clicking mouse button, right mouse button by default;
+# drag - by clicking right mouse button
 # edge - by moving mouse to the window edge
 # wheel - zoom in/out by mouse wheel
 @export var key: bool = true
@@ -105,7 +105,7 @@ func _physics_process(delta):
 
 func _unhandled_input( event ):
 	if event is InputEventMouseButton:
-		if drag and (event.button_index == MOUSE_BUTTON_LEFT || event.button_index == MOUSE_BUTTON_RIGHT):
+		if drag and (event.button_index == MOUSE_BUTTON_RIGHT):
 			# Control by right mouse button.
 			if event.pressed: __rmbk = true
 			else: __rmbk = false
