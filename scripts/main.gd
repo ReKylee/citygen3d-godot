@@ -6,39 +6,10 @@ const CityGen = preload("res://scripts/city_gen.gd")
 
 @onready var city_gen: CityGen = $"../CityGen"
 @onready var population_heatmap = $"../PopulationHeatmap"
+@onready var options_menu = $"../UI/OptionsDialogue"
 
 var generated_segments = []
 var generated_buildings = []
-
-func populate_options_values():
-	get_node("../UI/OptionsDialogue/SegmentsInput")\
-		.set_text(str(Options.SEGMENT_COUNT_LIMIT))
-	get_node("../UI/OptionsDialogue/BuildingDensityInput")\
-		.set_text(str(Options.BUILDING_COUNT_PER_SEGMENT))
-	get_node("../UI/OptionsDialogue/BuildingFrequencyInput")\
-		.set_text(str(Options.BUILDING_SEGMENT_PERIOD))
-	get_node("../UI/OptionsDialogue/SegmentLengthInput")\
-		.set_text(str(Options.DEFAULT_SEGMENT_LENGTH))
-	get_node("../UI/OptionsDialogue/HighwaySegmentLengthInput")\
-		.set_text(str(Options.HIGHWAY_SEGMENT_LENGTH))
-	get_node("../UI/OptionsDialogue/DefaultBranchProbabilityInput")\
-		.set_text(str(Options.DEFAULT_BRANCH_PROBABILITY))
-	get_node("../UI/OptionsDialogue/HighwayBranchProbabilityInput")\
-		.set_text(str(Options.HIGHWAY_BRANCH_PROBABILITY))
-	get_node("../UI/OptionsDialogue/BranchAngleDeviationInput")\
-		.set_text(str(Options.BRANCH_ANGLE_DEVIATION))
-	get_node("../UI/OptionsDialogue/StraightAngleDeviationInput")\
-		.set_text(str(Options.STRAIGHT_ANGLE_DEVIATION))
-	get_node("../UI/OptionsDialogue/MinIntersectionDeviationInput")\
-		.set_text(str(Options.MINIMUM_INTERSECTION_DEVIATION))
-	get_node("../UI/OptionsDialogue/BranchPopulationThresholdInput")\
-		.set_text(str(Options.NORMAL_BRANCH_POPULATION_THRESHOLD))
-	get_node("../UI/OptionsDialogue/HighwayPopulationThresholdInput")\
-		.set_text(str(Options.HIGHWAY_BRANCH_POPULATION_THRESHOLD))
-	get_node("../UI/OptionsDialogue/MaxSnapDistanceInput")\
-		.set_text(str(Options.MAX_SNAP_DISTANCE))
-	get_node("../UI/OptionsDialogue/MaxBuildingDistanceInput")\
-		.set_text(str(Options.MAX_BUILDING_DISTANCE_FROM_SEGMENT))
 
 func _ready():
 	populate_options_values()
@@ -66,12 +37,21 @@ func run():
 	# trigger redraw
 	queue_redraw()
 
+
+### GENERATE BUTTON & TOGGLES ###
+
 func _on_GenerateButton_pressed():
 	run()
 
 func _on_HeatmapCheckbox_toggled(button_pressed):
 	population_heatmap.visible = button_pressed
 
+func _on_OptionsCheckbox_toggled(button_pressed):
+	options_menu.visible = button_pressed
+
+
+### OPTIONS SETTING ###
+	
 func _on_segments_input_text_changed(new_value):
 	Options.SEGMENT_COUNT_LIMIT = new_value
 
@@ -113,3 +93,33 @@ func _on_max_snap_distance_input_text_changed(new_value):
 
 func _on_max_building_distance_input_text_changed(new_value):
 	Options.MAX_BUILDING_DISTANCE_FROM_SEGMENT = new_value
+
+func populate_options_values():
+	get_node("../UI/OptionsDialogue/SegmentsInput")\
+		.set_text(str(Options.SEGMENT_COUNT_LIMIT))
+	get_node("../UI/OptionsDialogue/BuildingDensityInput")\
+		.set_text(str(Options.BUILDING_COUNT_PER_SEGMENT))
+	get_node("../UI/OptionsDialogue/BuildingFrequencyInput")\
+		.set_text(str(Options.BUILDING_SEGMENT_PERIOD))
+	get_node("../UI/OptionsDialogue/SegmentLengthInput")\
+		.set_text(str(Options.DEFAULT_SEGMENT_LENGTH))
+	get_node("../UI/OptionsDialogue/HighwaySegmentLengthInput")\
+		.set_text(str(Options.HIGHWAY_SEGMENT_LENGTH))
+	get_node("../UI/OptionsDialogue/DefaultBranchProbabilityInput")\
+		.set_text(str(Options.DEFAULT_BRANCH_PROBABILITY))
+	get_node("../UI/OptionsDialogue/HighwayBranchProbabilityInput")\
+		.set_text(str(Options.HIGHWAY_BRANCH_PROBABILITY))
+	get_node("../UI/OptionsDialogue/BranchAngleDeviationInput")\
+		.set_text(str(Options.BRANCH_ANGLE_DEVIATION))
+	get_node("../UI/OptionsDialogue/StraightAngleDeviationInput")\
+		.set_text(str(Options.STRAIGHT_ANGLE_DEVIATION))
+	get_node("../UI/OptionsDialogue/MinIntersectionDeviationInput")\
+		.set_text(str(Options.MINIMUM_INTERSECTION_DEVIATION))
+	get_node("../UI/OptionsDialogue/BranchPopulationThresholdInput")\
+		.set_text(str(Options.NORMAL_BRANCH_POPULATION_THRESHOLD))
+	get_node("../UI/OptionsDialogue/HighwayPopulationThresholdInput")\
+		.set_text(str(Options.HIGHWAY_BRANCH_POPULATION_THRESHOLD))
+	get_node("../UI/OptionsDialogue/MaxSnapDistanceInput")\
+		.set_text(str(Options.MAX_SNAP_DISTANCE))
+	get_node("../UI/OptionsDialogue/MaxBuildingDistanceInput")\
+		.set_text(str(Options.MAX_BUILDING_DISTANCE_FROM_SEGMENT))

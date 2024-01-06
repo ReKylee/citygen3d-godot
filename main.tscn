@@ -34,6 +34,13 @@ size_flags_horizontal = 0
 size_flags_vertical = 0
 text = "Show population heatmap"
 
+[node name="OptionsCheckbox" type="CheckBox" parent="UI/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+button_pressed = true
+text = "Show options menu"
+
 [node name="OptionsDialogue" type="Panel" parent="UI"]
 custom_minimum_size = Vector2(160, 600)
 anchors_preset = 11
@@ -407,6 +414,7 @@ script = ExtResource("6")
 
 [connection signal="pressed" from="UI/MarginContainer/HBoxContainer/GenerateButton" to="Main" method="_on_GenerateButton_pressed"]
 [connection signal="toggled" from="UI/MarginContainer/HBoxContainer/HeatmapCheckbox" to="Main" method="_on_HeatmapCheckbox_toggled"]
+[connection signal="toggled" from="UI/MarginContainer/HBoxContainer/OptionsCheckbox" to="Main" method="_on_OptionsCheckbox_toggled"]
 [connection signal="text_changed" from="UI/OptionsDialogue/SegmentsInput" to="Main" method="_on_segments_input_text_changed"]
 [connection signal="text_changed" from="UI/OptionsDialogue/BuildingFrequencyInput" to="Main" method="_on_building_frequency_input_text_changed"]
 [connection signal="text_changed" from="UI/OptionsDialogue/BuildingDensityInput" to="Main" method="_on_building_density_input_text_changed"]
