@@ -30,3 +30,9 @@ extends Node2D
 @export var MAX_SNAP_DISTANCE := 50 # world units
 # the maximum distance that a building can be placed from a selected segment
 @export var MAX_BUILDING_DISTANCE_FROM_SEGMENT := 400.0 # world units
+
+# New config options in https://github.com/okorn-src/citygen-godot/
+# normal segment width
+@export var NORMAL_SEGMENT_WIDTH := 10 # world units
+# highway segment width
+@export var HIGHWAY_SEGMENT_WIDTH := 35 # world units

@@ -18,7 +18,7 @@ func _ready():
 
 func _draw():
 	for segment in generated_segments:
-		var width = 35 if segment.metadata.highway else 10
+		var width = Options.HIGHWAY_SEGMENT_WIDTH if segment.metadata.highway else Options.NORMAL_SEGMENT_WIDTH
 		draw_line(segment.start, segment.end, Color8(161, 175, 165), width)
 	for building in generated_buildings:
 		var corners = building.generate_corners()
