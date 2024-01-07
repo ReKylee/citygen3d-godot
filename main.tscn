@@ -436,7 +436,6 @@ offset_top = 568.0
 offset_right = 220.0
 offset_bottom = 599.0
 size_flags_horizontal = 3
-tooltip_text = "Enter world seed or leave blank for random generation."
 
 [node name="Label" type="Label" parent="UI/SeedInputHBoxContainer"]
 layout_mode = 2
@@ -445,7 +444,7 @@ text = "World seed:"
 [node name="WorldSeedInput" type="LineEdit" parent="UI/SeedInputHBoxContainer"]
 custom_minimum_size = Vector2(200, 20)
 layout_mode = 2
-tooltip_text = "World seed. Enter 0 or blank for random on next Generate action."
+tooltip_text = "World seed (Int64). Enter 0 or blank to randomize on next Generate."
 placeholder_text = "<world seed>"
 select_all_on_focus = true
 

@@ -31,7 +31,7 @@ func run():
 	for building in generated_buildings:
 		building.free()
 
-	if (Options.WORLD_SEED == 0):
+	if (! Options.WORLD_SEED):
 		rng.randomize()
 		Options.WORLD_SEED = rng.get_seed()
 	else:

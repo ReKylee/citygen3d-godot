@@ -38,4 +38,4 @@ extends Node2D
 @export var HIGHWAY_SEGMENT_WIDTH := 35 # world units
 # optional world generation seed (integer) -
 # used for heatmap, segments and buildings BUT only recreates the same world for a given set of options (see above)
-@export var WORLD_SEED := 0 # world seed; 0 = randomize
+@export var WORLD_SEED := 0 # world seed (int64); 0 = randomize
