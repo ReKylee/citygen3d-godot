@@ -10,6 +10,7 @@ const CityGen = preload("res://scripts/city_gen.gd")
 
 var generated_segments = []
 var generated_buildings = []
+var rng = RandomNumberGenerator.new()
 
 func _ready():
 	populate_options_values()
@@ -30,10 +31,19 @@ func run():
 	for building in generated_buildings:
 		building.free()
 
-	city_gen.randomize_heatmap()
-	generated_segments = city_gen.generate_segments()
-	generated_buildings = city_gen.generate_buildings(generated_segments)
+	if (Options.WORLD_SEED == 0):
+		rng.randomize()
+		Options.WORLD_SEED = rng.get_seed()
+	else:
+		rng.set_seed(Options.WORLD_SEED)
 
+	city_gen.randomize_heatmap(rng)
+	generated_segments = city_gen.generate_segments(rng)
+	generated_buildings = city_gen.generate_buildings(generated_segments, rng)
+
+	print("World seed: ", Options.WORLD_SEED)
+	refresh_world_seed_display()
+	
 	# trigger redraw
 	queue_redraw()
 
@@ -99,7 +109,10 @@ func _on_normal_segment_width_input_text_changed(new_value):
 
 func _on_highway_segment_width_input_text_changed(new_value):
 	Options.HIGHWAY_SEGMENT_WIDTH = new_value
-	
+
+func _on_world_seed_input_text_changed(new_value):
+	Options.WORLD_SEED = new_value
+
 func populate_options_values():
 	get_node("../UI/OptionsDialogue/SegmentsInput")\
 		.set_text(str(Options.SEGMENT_COUNT_LIMIT))
@@ -133,6 +146,10 @@ func populate_options_values():
 		.set_text(str(Options.NORMAL_SEGMENT_WIDTH))
 	get_node("../UI/OptionsDialogue/HighwaySegmentWidthInput")\
 		.set_text(str(Options.HIGHWAY_SEGMENT_WIDTH))
+
+func refresh_world_seed_display():
+	get_node("../UI/SeedInputHBoxContainer/WorldSeedInput")\
+		.set_text(str(Options.WORLD_SEED))
 
 
 

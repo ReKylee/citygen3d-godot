@@ -430,6 +430,25 @@ offset_bottom = 427.0
 scale = Vector2(0.8, 0.5)
 max_length = 2
 
+[node name="SeedInputHBoxContainer" type="HBoxContainer" parent="UI"]
+offset_left = 20.0
+offset_top = 568.0
+offset_right = 220.0
+offset_bottom = 599.0
+size_flags_horizontal = 3
+tooltip_text = "Enter world seed or leave blank for random generation."
+
+[node name="Label" type="Label" parent="UI/SeedInputHBoxContainer"]
+layout_mode = 2
+text = "World seed:"
+
+[node name="WorldSeedInput" type="LineEdit" parent="UI/SeedInputHBoxContainer"]
+custom_minimum_size = Vector2(200, 20)
+layout_mode = 2
+tooltip_text = "World seed. Enter 0 or blank for random on next Generate action."
+placeholder_text = "<world seed>"
+select_all_on_focus = true
+
 [node name="Camera2D" type="Camera2D" parent="."]
 zoom = Vector2(15, 15)
 script = ExtResource("2")
@@ -477,3 +496,4 @@ script = ExtResource("6")
 [connection signal="text_changed" from="UI/OptionsDialogue/MaxBuildingDistanceInput" to="Main" method="_on_max_building_distance_input_text_changed"]
 [connection signal="text_changed" from="UI/OptionsDialogue/NormalSegmentWidthInput" to="Main" method="_on_normal_segment_width_input_text_changed"]
 [connection signal="text_changed" from="UI/OptionsDialogue/HighwaySegmentWidthInput" to="Main" method="_on_highway_segment_width_input_text_changed"]
+[connection signal="text_changed" from="UI/SeedInputHBoxContainer/WorldSeedInput" to="Main" method="_on_world_seed_input_text_changed"]

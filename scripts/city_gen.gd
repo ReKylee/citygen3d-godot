@@ -2,14 +2,6 @@
 
 extends Node2D
 
-func random_branch_angle() -> float:
-	return 0 if Options.BRANCH_ANGLE_DEVIATION <= 0\
-		else Math.random_angle(Options.BRANCH_ANGLE_DEVIATION)
-
-func random_straight_angle() -> float:
-	return 0 if Options.STRAIGHT_ANGLE_DEVIATION <= 0\
-		else Math.random_angle(Options.STRAIGHT_ANGLE_DEVIATION)
-
 const Building = preload("res://scripts/building.gd")
 const Heatmap = preload("res://scripts/heatmap.gd")
 const Math = preload("res://scripts/math.gd")
@@ -21,10 +13,21 @@ const SegmentMetadata = segment_mod.SegmentMetadata
 @onready var physics_space := get_world_2d().direct_space_state
 @onready var physics_space_rid := get_world_2d().space
 
-func randomize_heatmap():
-	population_heatmap.noise.seed = randi()
+func random_branch_angle(rng: RandomNumberGenerator) -> float:
+	return 0 if Options.BRANCH_ANGLE_DEVIATION <= 0\
+		else Math.random_angle(Options.BRANCH_ANGLE_DEVIATION, rng)
 
-func generate_segments() -> Array:
+func random_straight_angle(rng: RandomNumberGenerator) -> float:
+	return 0 if Options.STRAIGHT_ANGLE_DEVIATION <= 0\
+		else Math.random_angle(Options.STRAIGHT_ANGLE_DEVIATION, rng)
+
+func randomize_heatmap(rng: RandomNumberGenerator):
+	if (rng):
+		population_heatmap.noise.seed = rng.randi()
+	else:
+		population_heatmap.noise.seed = randi()
+
+func generate_segments(rng: RandomNumberGenerator) -> Array:
 	var segments := []
 	var priority_q := []
 
@@ -58,7 +61,7 @@ func generate_segments() -> Array:
 			min_segment.setup_branch_links()
 			min_segment.attach_to_physics_space(physics_space_rid)
 			segments.append(min_segment)
-			for new_segment in global_goals_generate(min_segment):
+			for new_segment in global_goals_generate(min_segment, rng):
 				new_segment.t = min_segment.t + 1 + new_segment.t
 				priority_q.append(new_segment)
 
@@ -193,7 +196,7 @@ class LocalConstraintsIntersectionRadiusAction:
 		self.other.split(self.intersection, segment, segments)
 		return true
 
-func global_goals_generate(previous_segment: Segment) -> Array:
+func global_goals_generate(previous_segment: Segment, rng: RandomNumberGenerator) -> Array:
 	var new_branches = []
 	if !previous_segment.metadata.severed:
 		var template := GlobalGoalsTemplate.new(previous_segment)
@@ -202,7 +205,7 @@ func global_goals_generate(previous_segment: Segment) -> Array:
 		var straight_pop = sample_population(continue_straight.start, continue_straight.end)
 
 		if previous_segment.metadata.highway:
-			var random_straight = template.segment_continue(previous_segment.direction + random_straight_angle())
+			var random_straight = template.segment_continue(previous_segment.direction + random_straight_angle(rng))
 			var random_pop = sample_population(random_straight.start, random_straight.end)
 			var road_pop = null
 			if random_pop > straight_pop:
@@ -212,20 +215,22 @@ func global_goals_generate(previous_segment: Segment) -> Array:
 				new_branches.append(continue_straight)
 				road_pop = straight_pop
 			if road_pop > Options.HIGHWAY_BRANCH_POPULATION_THRESHOLD:
-				if randf() < Options.HIGHWAY_BRANCH_PROBABILITY:
-					var left_highway_branch = template.segment_continue(previous_segment.direction - 90 + random_branch_angle())
+				var branch_prob = rng.randf() if (rng) else randf()
+				if branch_prob < Options.HIGHWAY_BRANCH_PROBABILITY:
+					var left_highway_branch = template.segment_continue(previous_segment.direction - 90 + random_branch_angle(rng))
 					new_branches.append(left_highway_branch)
-				elif randf() < Options.HIGHWAY_BRANCH_PROBABILITY:
-					var right_highway_branch = template.segment_continue(previous_segment.direction + 90 + random_branch_angle())
+				elif branch_prob < Options.HIGHWAY_BRANCH_PROBABILITY:
+					var right_highway_branch = template.segment_continue(previous_segment.direction + 90 + random_branch_angle(rng))
 					new_branches.append(right_highway_branch)
 		elif straight_pop > Options.NORMAL_BRANCH_POPULATION_THRESHOLD:
 			new_branches.append(continue_straight)
 		if straight_pop > Options.NORMAL_BRANCH_POPULATION_THRESHOLD:
-			if randf() < Options.DEFAULT_BRANCH_PROBABILITY:
-				var left_branch = template.segment_branch(previous_segment.direction - 90 + random_branch_angle())
+			var straight_prob = rng.randf() if (rng) else randf()
+			if straight_prob < Options.DEFAULT_BRANCH_PROBABILITY:
+				var left_branch = template.segment_branch(previous_segment.direction - 90 + random_branch_angle(rng))
 				new_branches.append(left_branch)
-			elif randf() < Options.DEFAULT_BRANCH_PROBABILITY:
-				var right_branch = template.segment_branch(previous_segment.direction + 90 + random_branch_angle())
+			elif straight_prob < Options.DEFAULT_BRANCH_PROBABILITY:
+				var right_branch = template.segment_branch(previous_segment.direction + 90 + random_branch_angle(rng))
 				new_branches.append(right_branch)
 
 	for branch in new_branches:
@@ -256,23 +261,27 @@ class GlobalGoalsTemplate:
 		return self.segment(direction, Options.DEFAULT_SEGMENT_LENGTH, t, SegmentMetadata.new())
 
 const BUILDING_PLACEMENT_LOOP_LIMIT := 3
-func generate_buildings(segments: Array) -> Array:
+func generate_buildings(segments: Array, rng: RandomNumberGenerator) -> Array:
 	var buildings = []
 
 	for i in range(0, len(segments), Options.BUILDING_SEGMENT_PERIOD):
 		var segment: Segment = segments[i]
 
 		for _b in range(0, Options.BUILDING_COUNT_PER_SEGMENT):
-			var random_angle = randf() * 360.0
-			var random_radius = randf() * Options.MAX_BUILDING_DISTANCE_FROM_SEGMENT
+			var rand_val = rng.randf() if (rng) else randf()
+			var random_angle = rand_val * 360.0
+			rand_val = rng.randf() if (rng) else randf()
+			var random_radius = rand_val * Options.MAX_BUILDING_DISTANCE_FROM_SEGMENT
 
 			var building = Building.new()
 			building.center = (segment.start + segment.end) * 0.5
 			building.center.x += random_radius * sin(deg_to_rad(random_angle))
 			building.center.y += random_radius * cos(deg_to_rad(random_angle))
 			building.direction = segment.direction
-			building.aspect_ratio = randf_range(0.5, 2.0)
-			building.diagonal = randf_range(80.0, 150.0)
+			var rand_range = rng.randf_range(0.5, 2.0) if (rng) else randf_range(0.5, 2.0)
+			building.aspect_ratio = rand_range
+			rand_range = rng.randf_range(80.0, 150.0) if (rng) else randf_range(80.0, 150.0)
+			building.diagonal = rand_range
 
 			var permit_building = false
 			var query = PhysicsShapeQueryParameters2D.new()
