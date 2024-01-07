@@ -94,6 +94,12 @@ func _on_max_snap_distance_input_text_changed(new_value):
 func _on_max_building_distance_input_text_changed(new_value):
 	Options.MAX_BUILDING_DISTANCE_FROM_SEGMENT = new_value
 
+func _on_normal_segment_width_input_text_changed(new_value):
+	Options.NORMAL_SEGMENT_WIDTH = new_value
+
+func _on_highway_segment_width_input_text_changed(new_value):
+	Options.HIGHWAY_SEGMENT_WIDTH = new_value
+	
 func populate_options_values():
 	get_node("../UI/OptionsDialogue/SegmentsInput")\
 		.set_text(str(Options.SEGMENT_COUNT_LIMIT))
@@ -123,3 +129,10 @@ func populate_options_values():
 		.set_text(str(Options.MAX_SNAP_DISTANCE))
 	get_node("../UI/OptionsDialogue/MaxBuildingDistanceInput")\
 		.set_text(str(Options.MAX_BUILDING_DISTANCE_FROM_SEGMENT))
+	get_node("../UI/OptionsDialogue/NormalSegmentWidthInput")\
+		.set_text(str(Options.NORMAL_SEGMENT_WIDTH))
+	get_node("../UI/OptionsDialogue/HighwaySegmentWidthInput")\
+		.set_text(str(Options.HIGHWAY_SEGMENT_WIDTH))
+
+
+

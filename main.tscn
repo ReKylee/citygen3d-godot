@@ -70,10 +70,10 @@ custom_minimum_size = Vector2(80, 20)
 layout_mode = 0
 offset_left = 2.00001
 offset_top = 36.0
-offset_right = 82.0
+offset_right = 102.0
 offset_bottom = 56.0
 tooltip_text = "Number of segments to generate. Default: 2000"
-theme_override_font_sizes/normal_font_size = 10
+theme_override_font_sizes/normal_font_size = 9
 text = "num segments"
 scroll_active = false
 autowrap_mode = 0
@@ -81,11 +81,11 @@ autowrap_mode = 0
 [node name="SegmentsInput" type="LineEdit" parent="UI/OptionsDialogue"]
 custom_minimum_size = Vector2(60, 20)
 layout_mode = 0
-offset_left = 90.0
+offset_left = 98.0
 offset_top = 36.0
-offset_right = 157.063
+offset_right = 165.063
 offset_bottom = 67.0
-scale = Vector2(1, 0.5)
+scale = Vector2(0.8, 0.5)
 max_length = 5
 
 [node name="BuildingFrequency" type="RichTextLabel" parent="UI/OptionsDialogue"]
@@ -93,22 +93,22 @@ custom_minimum_size = Vector2(80, 20)
 layout_mode = 0
 offset_left = 2.00001
 offset_top = 60.0
-offset_right = 82.0
+offset_right = 102.0
 offset_bottom = 80.0
 tooltip_text = "Place buildings every nth segment. Default: 5"
-theme_override_font_sizes/normal_font_size = 10
-text = "building freq."
+theme_override_font_sizes/normal_font_size = 9
+text = "building frequency"
 scroll_active = false
 autowrap_mode = 0
 
 [node name="BuildingFrequencyInput" type="LineEdit" parent="UI/OptionsDialogue"]
 custom_minimum_size = Vector2(60, 20)
 layout_mode = 0
-offset_left = 90.0
+offset_left = 98.0
 offset_top = 60.0
-offset_right = 157.063
+offset_right = 165.063
 offset_bottom = 91.0
-scale = Vector2(1, 0.5)
+scale = Vector2(0.8, 0.5)
 max_length = 3
 
 [node name="BuildingDensity" type="RichTextLabel" parent="UI/OptionsDialogue"]
@@ -116,10 +116,10 @@ custom_minimum_size = Vector2(80, 20)
 layout_mode = 0
 offset_left = 2.00001
 offset_top = 84.0
-offset_right = 82.0
+offset_right = 102.0
 offset_bottom = 104.0
 tooltip_text = "Number of buildings per segment. Default: 10"
-theme_override_font_sizes/normal_font_size = 10
+theme_override_font_sizes/normal_font_size = 9
 text = "building density"
 scroll_active = false
 autowrap_mode = 0
@@ -127,11 +127,11 @@ autowrap_mode = 0
 [node name="BuildingDensityInput" type="LineEdit" parent="UI/OptionsDialogue"]
 custom_minimum_size = Vector2(60, 20)
 layout_mode = 0
-offset_left = 90.0
+offset_left = 98.0
 offset_top = 84.0
-offset_right = 157.063
+offset_right = 165.063
 offset_bottom = 115.0
-scale = Vector2(1, 0.5)
+scale = Vector2(0.8, 0.5)
 max_length = 2
 
 [node name="SegmentLength" type="RichTextLabel" parent="UI/OptionsDialogue"]
@@ -139,42 +139,42 @@ custom_minimum_size = Vector2(80, 20)
 layout_mode = 0
 offset_left = 2.00001
 offset_top = 108.0
-offset_right = 82.0
+offset_right = 102.0
 offset_bottom = 128.0
 tooltip_text = "Length of normal segments (in world units). Default: 300"
-theme_override_font_sizes/normal_font_size = 10
+theme_override_font_sizes/normal_font_size = 9
 text = "segment length"
 scroll_active = false
 autowrap_mode = 0
 
 [node name="SegmentLengthInput" type="LineEdit" parent="UI/OptionsDialogue"]
 layout_mode = 0
-offset_left = 90.0
+offset_left = 98.0
 offset_top = 108.0
-offset_right = 157.063
+offset_right = 165.063
 offset_bottom = 139.0
-scale = Vector2(1, 0.5)
+scale = Vector2(0.8, 0.5)
 max_length = 4
 
 [node name="HighwaySegmentLength" type="RichTextLabel" parent="UI/OptionsDialogue"]
 layout_mode = 0
 offset_left = 2.00001
 offset_top = 132.0
-offset_right = 82.0
+offset_right = 102.0
 offset_bottom = 152.0
 tooltip_text = "Length of highway segments in world units. Default: 400"
 theme_override_font_sizes/normal_font_size = 9
-text = "h'way segment len"
+text = "h'way segment length"
 scroll_active = false
 autowrap_mode = 0
 
 [node name="HighwaySegmentLengthInput" type="LineEdit" parent="UI/OptionsDialogue"]
 layout_mode = 0
-offset_left = 90.0
+offset_left = 98.0
 offset_top = 132.0
-offset_right = 157.063
+offset_right = 165.063
 offset_bottom = 163.0
-scale = Vector2(1, 0.5)
+scale = Vector2(0.8, 0.5)
 max_length = 4
 
 [node name="DefaultBranchProbability" type="RichTextLabel" parent="UI/OptionsDialogue"]
@@ -182,7 +182,7 @@ custom_minimum_size = Vector2(80, 20)
 layout_mode = 0
 offset_left = 2.00001
 offset_top = 156.0
-offset_right = 82.0
+offset_right = 102.0
 offset_bottom = 176.0
 tooltip_text = "Default segment branch probability. Default: 0.4"
 theme_override_font_sizes/normal_font_size = 9
@@ -193,11 +193,11 @@ autowrap_mode = 0
 [node name="DefaultBranchProbabilityInput" type="LineEdit" parent="UI/OptionsDialogue"]
 custom_minimum_size = Vector2(60, 20)
 layout_mode = 0
-offset_left = 90.0
+offset_left = 98.0
 offset_top = 156.0
-offset_right = 157.063
+offset_right = 165.063
 offset_bottom = 187.0
-scale = Vector2(1, 0.5)
+scale = Vector2(0.8, 0.5)
 max_length = 4
 
 [node name="HighwayBranchProbability" type="RichTextLabel" parent="UI/OptionsDialogue"]
@@ -205,7 +205,7 @@ custom_minimum_size = Vector2(80, 20)
 layout_mode = 0
 offset_left = 2.00001
 offset_top = 180.0
-offset_right = 82.0
+offset_right = 102.0
 offset_bottom = 200.0
 tooltip_text = "Highway branch probability. Default: 0.05"
 theme_override_font_sizes/normal_font_size = 8
@@ -216,11 +216,11 @@ autowrap_mode = 0
 [node name="HighwayBranchProbabilityInput" type="LineEdit" parent="UI/OptionsDialogue"]
 custom_minimum_size = Vector2(60, 20)
 layout_mode = 0
-offset_left = 90.0
+offset_left = 98.0
 offset_top = 180.0
-offset_right = 157.063
+offset_right = 165.063
 offset_bottom = 211.0
-scale = Vector2(1, 0.5)
+scale = Vector2(0.8, 0.5)
 max_length = 4
 
 [node name="BranchAngleDeviation" type="RichTextLabel" parent="UI/OptionsDialogue"]
@@ -228,7 +228,7 @@ custom_minimum_size = Vector2(80, 20)
 layout_mode = 0
 offset_left = 2.00001
 offset_top = 204.0
-offset_right = 82.0
+offset_right = 102.0
 offset_bottom = 224.0
 tooltip_text = "A segment branching off at 90 degree angle from a existing segment can vary by +/- this angle (degrees). Default: 3"
 theme_override_font_sizes/normal_font_size = 9
@@ -239,11 +239,11 @@ autowrap_mode = 0
 [node name="BranchAngleDeviationInput" type="LineEdit" parent="UI/OptionsDialogue"]
 custom_minimum_size = Vector2(60, 20)
 layout_mode = 0
-offset_left = 90.0
+offset_left = 98.0
 offset_top = 204.0
-offset_right = 157.063
+offset_right = 165.063
 offset_bottom = 235.0
-scale = Vector2(1, 0.5)
+scale = Vector2(0.8, 0.5)
 max_length = 4
 
 [node name="StraightAngleDeviation" type="RichTextLabel" parent="UI/OptionsDialogue"]
@@ -251,7 +251,7 @@ custom_minimum_size = Vector2(80, 20)
 layout_mode = 0
 offset_left = 2.00001
 offset_top = 228.0
-offset_right = 82.0
+offset_right = 102.0
 offset_bottom = 248.0
 tooltip_text = "A segment continuing straight ahead can vary by +/- this angle (degrees). Default: 15"
 theme_override_font_sizes/normal_font_size = 9
@@ -262,11 +262,11 @@ autowrap_mode = 0
 [node name="StraightAngleDeviationInput" type="LineEdit" parent="UI/OptionsDialogue"]
 custom_minimum_size = Vector2(60, 20)
 layout_mode = 0
-offset_left = 90.0
+offset_left = 98.0
 offset_top = 228.0
-offset_right = 157.063
+offset_right = 165.063
 offset_bottom = 259.0
-scale = Vector2(1, 0.5)
+scale = Vector2(0.8, 0.5)
 max_length = 4
 
 [node name="MinIntersectionDeviation" type="RichTextLabel" parent="UI/OptionsDialogue"]
@@ -274,7 +274,7 @@ custom_minimum_size = Vector2(80, 20)
 layout_mode = 0
 offset_left = 2.00001
 offset_top = 252.0
-offset_right = 82.0
+offset_right = 102.0
 offset_bottom = 272.0
 tooltip_text = "Min deviation angle for segments allowed to intersect. Can help enforce grid-like network. Default: 30"
 theme_override_font_sizes/normal_font_size = 9
@@ -285,11 +285,11 @@ autowrap_mode = 0
 [node name="MinIntersectionDeviationInput" type="LineEdit" parent="UI/OptionsDialogue"]
 custom_minimum_size = Vector2(60, 20)
 layout_mode = 0
-offset_left = 90.0
+offset_left = 98.0
 offset_top = 252.0
-offset_right = 157.063
+offset_right = 165.063
 offset_bottom = 283.0
-scale = Vector2(1, 0.5)
+scale = Vector2(0.8, 0.5)
 max_length = 4
 
 [node name="BranchPopulationThreshold" type="RichTextLabel" parent="UI/OptionsDialogue"]
@@ -297,22 +297,22 @@ custom_minimum_size = Vector2(80, 20)
 layout_mode = 0
 offset_left = 2.00001
 offset_top = 276.0
-offset_right = 82.0
+offset_right = 102.0
 offset_bottom = 296.0
 tooltip_text = "Min population threshold to place a normal segment. Default: 0.5"
 theme_override_font_sizes/normal_font_size = 8
-text = "branch pop thresh."
+text = "branch pop threshold"
 scroll_active = false
 autowrap_mode = 0
 
 [node name="BranchPopulationThresholdInput" type="LineEdit" parent="UI/OptionsDialogue"]
 custom_minimum_size = Vector2(60, 20)
 layout_mode = 0
-offset_left = 90.0
+offset_left = 98.0
 offset_top = 276.0
-offset_right = 157.063
+offset_right = 165.063
 offset_bottom = 307.0
-scale = Vector2(1, 0.5)
+scale = Vector2(0.8, 0.5)
 max_length = 3
 
 [node name="HighwayPopulationThreshold" type="RichTextLabel" parent="UI/OptionsDialogue"]
@@ -320,22 +320,22 @@ custom_minimum_size = Vector2(80, 20)
 layout_mode = 0
 offset_left = 2.00001
 offset_top = 300.0
-offset_right = 82.0
+offset_right = 102.0
 offset_bottom = 320.0
 tooltip_text = "Min population threshold to place a highway segment. Default: 0.5"
 theme_override_font_sizes/normal_font_size = 9
-text = "h'way pop thresh."
+text = "h'way pop threshold"
 scroll_active = false
 autowrap_mode = 0
 
 [node name="HighwayPopulationThresholdInput" type="LineEdit" parent="UI/OptionsDialogue"]
 custom_minimum_size = Vector2(60, 20)
 layout_mode = 0
-offset_left = 90.0
+offset_left = 98.0
 offset_top = 300.0
-offset_right = 157.063
+offset_right = 165.063
 offset_bottom = 331.0
-scale = Vector2(1, 0.5)
+scale = Vector2(0.8, 0.5)
 max_length = 3
 
 [node name="MaxSnapDistance" type="RichTextLabel" parent="UI/OptionsDialogue"]
@@ -343,22 +343,22 @@ custom_minimum_size = Vector2(80, 20)
 layout_mode = 0
 offset_left = 2.00001
 offset_top = 324.0
-offset_right = 82.0
+offset_right = 102.0
 offset_bottom = 344.0
 tooltip_text = "Allow a segment to intersect with an existing segment within this distance (world units). Default: 50"
-theme_override_font_sizes/normal_font_size = 10
-text = "max snap dist."
+theme_override_font_sizes/normal_font_size = 9
+text = "max snap distance"
 scroll_active = false
 autowrap_mode = 0
 
 [node name="MaxSnapDistanceInput" type="LineEdit" parent="UI/OptionsDialogue"]
 custom_minimum_size = Vector2(60, 20)
 layout_mode = 0
-offset_left = 90.0
+offset_left = 98.0
 offset_top = 324.0
-offset_right = 157.063
+offset_right = 165.063
 offset_bottom = 355.0
-scale = Vector2(1, 0.5)
+scale = Vector2(0.8, 0.5)
 max_length = 4
 
 [node name="MaxBuildingDistance" type="RichTextLabel" parent="UI/OptionsDialogue"]
@@ -366,7 +366,7 @@ custom_minimum_size = Vector2(80, 20)
 layout_mode = 0
 offset_left = 2.00001
 offset_top = 348.0
-offset_right = 82.0
+offset_right = 102.0
 offset_bottom = 368.0
 tooltip_text = "Max distance (world units) that a building can be placed from a selected segment. Default: 400"
 theme_override_font_sizes/normal_font_size = 9
@@ -377,12 +377,58 @@ autowrap_mode = 0
 [node name="MaxBuildingDistanceInput" type="LineEdit" parent="UI/OptionsDialogue"]
 custom_minimum_size = Vector2(60, 20)
 layout_mode = 0
-offset_left = 90.0
+offset_left = 98.0
 offset_top = 348.0
-offset_right = 157.063
+offset_right = 165.063
 offset_bottom = 379.0
-scale = Vector2(1, 0.5)
+scale = Vector2(0.8, 0.5)
 max_length = 4
+
+[node name="NormalSegmentWidth" type="RichTextLabel" parent="UI/OptionsDialogue"]
+custom_minimum_size = Vector2(80, 20)
+layout_mode = 0
+offset_left = 2.00001
+offset_top = 372.0
+offset_right = 102.0
+offset_bottom = 392.0
+tooltip_text = "Normal road segment width (world units). Default: 10"
+theme_override_font_sizes/normal_font_size = 9
+text = "road segment width"
+scroll_active = false
+autowrap_mode = 0
+
+[node name="NormalSegmentWidthInput" type="LineEdit" parent="UI/OptionsDialogue"]
+custom_minimum_size = Vector2(60, 20)
+layout_mode = 0
+offset_left = 98.0
+offset_top = 372.0
+offset_right = 165.063
+offset_bottom = 403.0
+scale = Vector2(0.8, 0.5)
+max_length = 2
+
+[node name="HighwaySegmentWidth" type="RichTextLabel" parent="UI/OptionsDialogue"]
+custom_minimum_size = Vector2(100, 20)
+layout_mode = 0
+offset_left = 2.00001
+offset_top = 396.0
+offset_right = 102.0
+offset_bottom = 416.0
+tooltip_text = "Highway segment width (world units). Default: 35"
+theme_override_font_sizes/normal_font_size = 9
+text = "h'way segment width"
+scroll_active = false
+autowrap_mode = 0
+
+[node name="HighwaySegmentWidthInput" type="LineEdit" parent="UI/OptionsDialogue"]
+custom_minimum_size = Vector2(60, 20)
+layout_mode = 0
+offset_left = 98.0
+offset_top = 396.0
+offset_right = 165.063
+offset_bottom = 427.0
+scale = Vector2(0.8, 0.5)
+max_length = 2
 
 [node name="Camera2D" type="Camera2D" parent="."]
 zoom = Vector2(15, 15)
@@ -429,3 +475,5 @@ script = ExtResource("6")
 [connection signal="text_changed" from="UI/OptionsDialogue/HighwayPopulationThresholdInput" to="Main" method="_on_highway_population_threshold_input_text_changed"]
 [connection signal="text_changed" from="UI/OptionsDialogue/MaxSnapDistanceInput" to="Main" method="_on_max_snap_distance_input_text_changed"]
 [connection signal="text_changed" from="UI/OptionsDialogue/MaxBuildingDistanceInput" to="Main" method="_on_max_building_distance_input_text_changed"]
+[connection signal="text_changed" from="UI/OptionsDialogue/NormalSegmentWidthInput" to="Main" method="_on_normal_segment_width_input_text_changed"]
+[connection signal="text_changed" from="UI/OptionsDialogue/HighwaySegmentWidthInput" to="Main" method="_on_highway_segment_width_input_text_changed"]
