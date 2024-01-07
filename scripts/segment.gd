@@ -1,6 +1,3 @@
-# the width of the segment used when checking for collisions
-const SEGMENT_COLLIDER_WIDTH = 10.0
-
 class Segment extends Object:
 	var physics_area: RID
 	var physics_shape: RID
@@ -63,7 +60,8 @@ class Segment extends Object:
 	func create_physics_shape() -> RID:
 		if self.physics_shape.get_id() == 0:
 			self.physics_shape = PhysicsServer2D.rectangle_shape_create()
-			var shape_data = Vector2(SEGMENT_COLLIDER_WIDTH * 0.5, self.length * 0.5)
+			var collider_width = Options.HIGHWAY_SEGMENT_WIDTH if self.metadata.highway else Options.NORMAL_SEGMENT_WIDTH
+			var shape_data = Vector2(collider_width * 0.5, self.length * 0.5)
 			PhysicsServer2D.shape_set_data(self.physics_shape, shape_data)
 		return self.physics_shape
 
