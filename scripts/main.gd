@@ -14,7 +14,6 @@ var rng = RandomNumberGenerator.new()
 
 func _ready():
 	populate_options_values()
-	randomize()
 	run()
 
 func _draw():
