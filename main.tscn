@@ -1,12 +1,25 @@
-[gd_scene load_steps=6 format=3 uid="uid://ce0u7t3kimtq3"]
+[gd_scene load_steps=7 format=3 uid="uid://ce0u7t3kimtq3"]
 
 [ext_resource type="Script" path="res://scripts/city_gen.gd" id="1"]
-[ext_resource type="Script" path="res://scripts/camera.gd" id="2"]
+[ext_resource type="Environment" uid="uid://bvqmbthchilrd" path="res://default_env.tres" id="2_3kr3h"]
 [ext_resource type="Texture2D" uid="uid://dsr7jn2nmwvs4" path="res://heatmap.tres" id="3"]
 [ext_resource type="Script" path="res://scripts/heatmap.gd" id="4"]
 [ext_resource type="Script" path="res://scripts/main.gd" id="6"]
+[ext_resource type="Script" path="res://addons/debug_camera/scripts/DebugCamera3D.gd" id="6_w1sin"]
 
-[node name="Node2D" type="Node2D"]
+[node name="Main" type="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 2)
+script = ExtResource("6")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource("2_3kr3h")
+
+[node name="DebugCamera3D" type="Camera3D" parent="."]
+current = true
+script = ExtResource("6_w1sin")
+
+[node name="CityGen" type="Node2D" parent="."]
+script = ExtResource("1")
 
 [node name="UI" type="CanvasLayer" parent="."]
 
@@ -453,20 +466,8 @@ placeholder_text = "<world seed>"
 clear_button_enabled = true
 select_all_on_focus = true
 
-[node name="Camera2D" type="Camera2D" parent="."]
-zoom = Vector2(15, 15)
-script = ExtResource("2")
-zoom_out_limit = 30
-
 [node name="MainCanvasLayer" type="CanvasLayer" parent="."]
 layer = -1
-
-[node name="ColorRect" type="ColorRect" parent="MainCanvasLayer"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-mouse_filter = 2
-color = Color(0.239216, 0.447059, 0.156863, 1)
 
 [node name="PopulationHeatmap" type="Sprite2D" parent="."]
 visible = false
@@ -475,29 +476,23 @@ scale = Vector2(500, 500)
 texture = ExtResource("3")
 script = ExtResource("4")
 
-[node name="CityGen" type="Node2D" parent="."]
-script = ExtResource("1")
-
-[node name="Main" type="Node2D" parent="."]
-script = ExtResource("6")
-
-[connection signal="pressed" from="UI/MarginContainer/HBoxContainer/GenerateButton" to="Main" method="_on_GenerateButton_pressed"]
-[connection signal="toggled" from="UI/MarginContainer/HBoxContainer/HeatmapCheckbox" to="Main" method="_on_HeatmapCheckbox_toggled"]
-[connection signal="toggled" from="UI/MarginContainer/HBoxContainer/OptionsCheckbox" to="Main" method="_on_OptionsCheckbox_toggled"]
-[connection signal="text_changed" from="UI/OptionsDialogue/SegmentsInput" to="Main" method="_on_segments_input_text_changed"]
-[connection signal="text_changed" from="UI/OptionsDialogue/BuildingFrequencyInput" to="Main" method="_on_building_frequency_input_text_changed"]
-[connection signal="text_changed" from="UI/OptionsDialogue/BuildingDensityInput" to="Main" method="_on_building_density_input_text_changed"]
-[connection signal="text_changed" from="UI/OptionsDialogue/SegmentLengthInput" to="Main" method="_on_segment_length_input_text_changed"]
-[connection signal="text_changed" from="UI/OptionsDialogue/HighwaySegmentLengthInput" to="Main" method="_on_highway_segment_length_input_text_changed"]
-[connection signal="text_changed" from="UI/OptionsDialogue/DefaultBranchProbabilityInput" to="Main" method="_on_default_branch_probability_input_text_changed"]
-[connection signal="text_changed" from="UI/OptionsDialogue/HighwayBranchProbabilityInput" to="Main" method="_on_highway_branch_probability_input_text_changed"]
-[connection signal="text_changed" from="UI/OptionsDialogue/BranchAngleDeviationInput" to="Main" method="_on_branch_angle_deviation_input_text_changed"]
-[connection signal="text_changed" from="UI/OptionsDialogue/StraightAngleDeviationInput" to="Main" method="_on_straight_angle_deviation_input_text_changed"]
-[connection signal="text_changed" from="UI/OptionsDialogue/MinIntersectionDeviationInput" to="Main" method="_on_min_intersection_deviation_input_text_changed"]
-[connection signal="text_changed" from="UI/OptionsDialogue/BranchPopulationThresholdInput" to="Main" method="_on_branch_population_threshold_input_text_changed"]
-[connection signal="text_changed" from="UI/OptionsDialogue/HighwayPopulationThresholdInput" to="Main" method="_on_highway_population_threshold_input_text_changed"]
-[connection signal="text_changed" from="UI/OptionsDialogue/MaxSnapDistanceInput" to="Main" method="_on_max_snap_distance_input_text_changed"]
-[connection signal="text_changed" from="UI/OptionsDialogue/MaxBuildingDistanceInput" to="Main" method="_on_max_building_distance_input_text_changed"]
-[connection signal="text_changed" from="UI/OptionsDialogue/NormalSegmentWidthInput" to="Main" method="_on_normal_segment_width_input_text_changed"]
-[connection signal="text_changed" from="UI/OptionsDialogue/HighwaySegmentWidthInput" to="Main" method="_on_highway_segment_width_input_text_changed"]
-[connection signal="text_changed" from="UI/SeedInputHBoxContainer/WorldSeedInput" to="Main" method="_on_world_seed_input_text_changed"]
+[connection signal="pressed" from="UI/MarginContainer/HBoxContainer/GenerateButton" to="." method="_on_GenerateButton_pressed"]
+[connection signal="toggled" from="UI/MarginContainer/HBoxContainer/HeatmapCheckbox" to="." method="_on_HeatmapCheckbox_toggled"]
+[connection signal="toggled" from="UI/MarginContainer/HBoxContainer/OptionsCheckbox" to="." method="_on_OptionsCheckbox_toggled"]
+[connection signal="text_changed" from="UI/OptionsDialogue/SegmentsInput" to="." method="_on_segments_input_text_changed"]
+[connection signal="text_changed" from="UI/OptionsDialogue/BuildingFrequencyInput" to="." method="_on_building_frequency_input_text_changed"]
+[connection signal="text_changed" from="UI/OptionsDialogue/BuildingDensityInput" to="." method="_on_building_density_input_text_changed"]
+[connection signal="text_changed" from="UI/OptionsDialogue/SegmentLengthInput" to="." method="_on_segment_length_input_text_changed"]
+[connection signal="text_changed" from="UI/OptionsDialogue/HighwaySegmentLengthInput" to="." method="_on_highway_segment_length_input_text_changed"]
+[connection signal="text_changed" from="UI/OptionsDialogue/DefaultBranchProbabilityInput" to="." method="_on_default_branch_probability_input_text_changed"]
+[connection signal="text_changed" from="UI/OptionsDialogue/HighwayBranchProbabilityInput" to="." method="_on_highway_branch_probability_input_text_changed"]
+[connection signal="text_changed" from="UI/OptionsDialogue/BranchAngleDeviationInput" to="." method="_on_branch_angle_deviation_input_text_changed"]
+[connection signal="text_changed" from="UI/OptionsDialogue/StraightAngleDeviationInput" to="." method="_on_straight_angle_deviation_input_text_changed"]
+[connection signal="text_changed" from="UI/OptionsDialogue/MinIntersectionDeviationInput" to="." method="_on_min_intersection_deviation_input_text_changed"]
+[connection signal="text_changed" from="UI/OptionsDialogue/BranchPopulationThresholdInput" to="." method="_on_branch_population_threshold_input_text_changed"]
+[connection signal="text_changed" from="UI/OptionsDialogue/HighwayPopulationThresholdInput" to="." method="_on_highway_population_threshold_input_text_changed"]
+[connection signal="text_changed" from="UI/OptionsDialogue/MaxSnapDistanceInput" to="." method="_on_max_snap_distance_input_text_changed"]
+[connection signal="text_changed" from="UI/OptionsDialogue/MaxBuildingDistanceInput" to="." method="_on_max_building_distance_input_text_changed"]
+[connection signal="text_changed" from="UI/OptionsDialogue/NormalSegmentWidthInput" to="." method="_on_normal_segment_width_input_text_changed"]
+[connection signal="text_changed" from="UI/OptionsDialogue/HighwaySegmentWidthInput" to="." method="_on_highway_segment_width_input_text_changed"]
+[connection signal="text_changed" from="UI/SeedInputHBoxContainer/WorldSeedInput" to="." method="_on_world_seed_input_text_changed"]
