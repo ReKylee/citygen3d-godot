@@ -25,12 +25,13 @@ func draw():
 		var s = DebugDraw3D.scoped_config().set_thickness(width/4)
 		DebugDraw3D.draw_line(Vector3(segment.start.x, 0, segment.start.y), Vector3(segment.end.x, 0, segment.end.y),Color8(161, 175, 165))
 	for building in generated_buildings:
-		var corners2d = building.generate_corners()
-		var corners3d: PackedVector3Array = []
+		var corners2d = building.generate_corners() as PackedVector2Array
+		corners2d.append(corners2d[0])
+		var corners3d : PackedVector3Array
 		for corner in corners2d:
 			corners3d.append(Vector3(corner.x, 0, corner.y))
 		var s = DebugDraw3D.scoped_config().set_thickness(2)
-		DebugDraw3D.draw_lines(corners3d, Color8(12, 22, 31))
+		DebugDraw3D.draw_line_path(corners3d, Color8(12, 22, 31))
 
 func run():
 	for segment in generated_segments:
