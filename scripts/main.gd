@@ -14,13 +14,6 @@ const SegmentMetadata = seg_mod.SegmentMetadata
 
 @onready var road_manager: RoadManager = $RoadManager
 
-@onready var highway_container: RoadContainer = $RoadManager/HighwayContainer
-@onready var root_road: RoadPoint = $RoadManager/HighwayContainer/Root
-
-
-@onready var FirstRoadPoint : RoadPoint = $RoadManager/HighwayContainer/Root
-@onready var LastRoadPoint : RoadPoint = $RoadManager/HighwayContainer/Root
-
 var generated_segments = []
 var generated_buildings = []
 var rng = RandomNumberGenerator.new()
@@ -31,7 +24,7 @@ func _ready():
 	populate_options_values()
 	run()
 func _process(delta: float) -> void:
-	#draw()
+	draw()
 	pass
 	
 func draw():
@@ -50,66 +43,36 @@ func draw():
 		DebugDraw3D.draw_line_path(corners3d, Color8(12, 22, 31))
 		
 
-func getBestSegment(curr, filteredLinks) -> Segment:
-	var bestNextSegment = filteredLinks.reduce(
-		func(mini, val): 
-			return val if (
-				Math.min_degree_difference(curr.direction, val.direction) < mini.direction
-				) else mini) if filteredLinks.size() > 0 else null
-	return bestNextSegment
-
-
-func generateHighwayRoadPoint(segment: Segment, direction):
-	var new_rp = RoadPoint.new()
-	highway_container.add_child(new_rp)
-	match direction:
-			RoadPoint.PointInit.NEXT:
-				new_rp.copy_settings_from(LastRoadPoint)
-				new_rp.rotation_degrees.y = -segment.direction
-				new_rp.global_position = Vector3(segment.end.x, 0, segment.end.y)
-				var _res_next = new_rp.connect_roadpoint(RoadPoint.PointInit.NEXT, LastRoadPoint, RoadPoint.PointInit.PRIOR)
-				LastRoadPoint = new_rp
-			RoadPoint.PointInit.PRIOR:
-				new_rp.copy_settings_from(FirstRoadPoint)
-				new_rp.rotation_degrees.y = segment.direction
-				new_rp.global_position = Vector3(segment.end.x, 0, segment.end.y)
-				var _res_prior = new_rp.connect_roadpoint(RoadPoint.PointInit.PRIOR, FirstRoadPoint, RoadPoint.PointInit.NEXT)
-				FirstRoadPoint = new_rp
-
-
-func generateByLinks(rootSegment : Segment, direction):
-	var currSegment = rootSegment
-	while(currSegment != null):
-		var links = currSegment.links_f
-		var filteredLinks = links.filter(func(seg: Segment): return seg.metadata.highway)
-		var bestNextSegment = getBestSegment(currSegment, filteredLinks)
-		if (bestNextSegment == null):
-			return
-		generateHighwayRoadPoint(currSegment, direction)
-			
-		currSegment = bestNextSegment
-
-		
-	
-func generateHighways():
-	#var width = Options.HIGHWAY_SEGMENT_WIDTH if generated_segments[i].metadata.highway else Options.NORMAL_SEGMENT_WIDTH
-	var filteredRightHighways = generated_segments.filter(
-		func(segment: Segment): return segment.metadata.highway && segment.direction > 0)
-	var filteredLeftHighways = generated_segments.filter(
-		func(segment: Segment): return segment.metadata.highway && segment.direction < 0)
-	
-	
-	generateByLinks(filteredRightHighways[0], RoadPoint.PointInit.NEXT)
-	generateByLinks(filteredLeftHighways[0], RoadPoint.PointInit.PRIOR)
-	
 func generate_roads():
-	highway_container._auto_refresh = false
-	generateHighways()
-	highway_container.rebuild_segments(false)
+
+	for segment in generated_segments:
+		var segment_container = segment.connect_road_points(road_manager) as RoadContainer
+	
+	for segment in generated_segments:
+		var this_container = segment.container
+		var links_b = segment.links_b
+		var links_f = segment.links_f
+		if(links_b.size() == 0):
+			return
+		if(links_f.size() == 0):
+			return
+		for seglink in links_b:
+			var cont = seglink.container as RoadContainer
+			var link_road_end = seglink.road_end as RoadPoint
+			link_road_end.connect_container(RoadPoint.PointInit.PRIOR, segment.road_start, RoadPoint.PointInit.NEXT)
+		for seglink in links_f:
+			var cont = seglink.container as RoadContainer
+			var link_road_start = seglink.road_start as RoadPoint
+			link_road_start.connect_container(RoadPoint.PointInit.NEXT, segment.road_end, RoadPoint.PointInit.PRIOR)
+			
+	road_manager.rebuild_all_containers()
 	
 
+	
 	
 func run():
+	for child in road_manager.get_children():
+		child.free()
 	for segment in generated_segments:
 		segment.free()
 	for building in generated_buildings:

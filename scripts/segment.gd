@@ -18,7 +18,10 @@ class Segment extends Object:
 	# links backwards and forwards
 	var links_b: Array = [] # [Segment]
 	var links_f: Array = [] # [Segment]
-
+	var road_start: RoadPoint
+	var road_end: RoadPoint
+	var container: RoadContainer
+	
 	var previous_segment_to_link = null
 
 	var direction: float: get = get_direction
@@ -52,11 +55,28 @@ class Segment extends Object:
 		self.end = end_
 		self.t = t_
 		self.metadata = metadata_
-
+		self.road_end = RoadPoint.new()
+		self.road_start = RoadPoint.new()
+		self.container = RoadContainer.new()
+		
 	func _notification(n):
 		if n == NOTIFICATION_PREDELETE:
 			self.detach_from_physics_space()
 
+	func connect_road_points(manager: RoadManager):
+		manager.add_child(container)
+		container.setup_road_container()
+		container._auto_refresh = false
+		container.add_child(road_start)
+		container.add_child(road_end)
+		road_start.rotation_degrees.y = self.direction
+		road_end.rotation_degrees.y = self.direction
+		container.global_position = Vector3(self.start.x, 0, self.start.y)
+		road_end.global_position = Vector3(self.end.x, 0, self.end.y)
+		road_start.connect_roadpoint(RoadPoint.PointInit.NEXT, road_end, RoadPoint.PointInit.PRIOR)
+		#road_end.connect_roadpoint(RoadPoint.PointInit.PRIOR, road_start, RoadPoint.PointInit.NEXT)
+		return container
+		
 	func create_physics_shape() -> RID:
 		if self.physics_shape.get_id() == 0:
 			self.physics_shape = PhysicsServer2D.rectangle_shape_create()
