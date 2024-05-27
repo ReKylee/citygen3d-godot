@@ -24,7 +24,7 @@ func _ready():
 	populate_options_values()
 	run()
 func _process(delta: float) -> void:
-	draw()
+	#draw()
 	pass
 	
 func draw():
@@ -47,7 +47,7 @@ func generate_roads():
 
 	for segment in generated_segments:
 		var segment_container = segment.connect_road_points(road_manager) as RoadContainer
-	
+		
 	for segment in generated_segments:
 		var this_container = segment.container
 		var links_b = segment.links_b

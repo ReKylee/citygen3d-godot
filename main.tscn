@@ -479,6 +479,7 @@ layer = -1
 
 [node name="RoadManager" type="Node3D" parent="."]
 script = ExtResource("7_4b8pu")
+density = 30.0
 auto_refresh = false
 
 [connection signal="pressed" from="UI/MarginContainer/HBoxContainer/GenerateButton" to="." method="_on_GenerateButton_pressed"]
