@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://ce0u7t3kimtq3"]
+[gd_scene load_steps=11 format=3 uid="uid://ce0u7t3kimtq3"]
 
 [ext_resource type="Script" path="res://scripts/city_gen.gd" id="1"]
 [ext_resource type="Environment" uid="uid://bvqmbthchilrd" path="res://default_env.tres" id="2_3kr3h"]
@@ -6,6 +6,10 @@
 [ext_resource type="Script" path="res://scripts/heatmap.gd" id="4"]
 [ext_resource type="Script" path="res://scripts/main.gd" id="6"]
 [ext_resource type="Script" path="res://addons/debug_camera/scripts/DebugCamera3D.gd" id="6_w1sin"]
+[ext_resource type="Script" path="res://addons/road-generator/nodes/road_manager.gd" id="7_4b8pu"]
+[ext_resource type="Script" path="res://addons/road-generator/nodes/road_container.gd" id="8_mr7jg"]
+[ext_resource type="Material" path="res://addons/road-generator/resources/road_texture.material" id="9_qxgk1"]
+[ext_resource type="Script" path="res://addons/road-generator/nodes/road_point.gd" id="10_ckuoa"]
 
 [node name="Main" type="Node3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 2)
@@ -20,6 +24,13 @@ script = ExtResource("6_w1sin")
 
 [node name="CityGen" type="Node2D" parent="."]
 script = ExtResource("1")
+
+[node name="PopulationHeatmap" type="Sprite2D" parent="CityGen"]
+visible = false
+modulate = Color(0.0980392, 0.52549, 0.0627451, 1)
+scale = Vector2(500, 500)
+texture = ExtResource("3")
+script = ExtResource("4")
 
 [node name="UI" type="CanvasLayer" parent="."]
 
@@ -469,12 +480,23 @@ select_all_on_focus = true
 [node name="MainCanvasLayer" type="CanvasLayer" parent="."]
 layer = -1
 
-[node name="PopulationHeatmap" type="Sprite2D" parent="."]
-visible = false
-modulate = Color(0.0980392, 0.52549, 0.0627451, 1)
-scale = Vector2(500, 500)
-texture = ExtResource("3")
-script = ExtResource("4")
+[node name="RoadManager" type="Node3D" parent="."]
+script = ExtResource("7_4b8pu")
+
+[node name="HighwayContainer" type="Node3D" parent="RoadManager"]
+script = ExtResource("8_mr7jg")
+material_resource = ExtResource("9_qxgk1")
+use_lowpoly_preview = true
+edge_containers = Array[NodePath]([NodePath(""), NodePath("")])
+edge_rp_targets = Array[NodePath]([NodePath(""), NodePath("")])
+edge_rp_target_dirs = Array[int]([-1, -1])
+edge_rp_locals = Array[NodePath]([NodePath("Root"), NodePath("Root")])
+edge_rp_local_dirs = Array[int]([0, 1])
+
+[node name="Root" type="Node3D" parent="RoadManager/HighwayContainer"]
+script = ExtResource("10_ckuoa")
+traffic_dir = [2, 2, 1, 1]
+lanes = [2, 4, 4, 2]
 
 [connection signal="pressed" from="UI/MarginContainer/HBoxContainer/GenerateButton" to="." method="_on_GenerateButton_pressed"]
 [connection signal="toggled" from="UI/MarginContainer/HBoxContainer/HeatmapCheckbox" to="." method="_on_HeatmapCheckbox_toggled"]

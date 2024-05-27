@@ -9,7 +9,7 @@ const segment_mod = preload("res://scripts/segment.gd")
 const Segment = segment_mod.Segment
 const SegmentMetadata = segment_mod.SegmentMetadata
 
-@onready var population_heatmap: Heatmap = $"../PopulationHeatmap"
+@onready var population_heatmap: Heatmap = $PopulationHeatmap
 @onready var physics_space := get_world_2d().direct_space_state
 @onready var physics_space_rid := get_world_2d().space
 

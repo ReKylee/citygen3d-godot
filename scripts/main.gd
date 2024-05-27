@@ -2,28 +2,38 @@
 
 extends Node3D
 
-const CityGen = preload("res://scripts/city_gen.gd")
+const Math = preload("res://scripts/math.gd")
+const CityGen = preload("res://scripts/city_gen.gd") 
+const seg_mod = preload("res://scripts/segment.gd")
+const Segment = seg_mod.Segment
+const SegmentMetadata = seg_mod.SegmentMetadata
 
 @onready var city_gen: CityGen = $CityGen
-@onready var population_heatmap = $PopulationHeatmap
+@onready var population_heatmap = $CityGen/PopulationHeatmap
 @onready var options_menu = $UI/OptionsDialogue
+
+@onready var road_manager: RoadManager = $RoadManager
+
+@onready var highway_container: RoadContainer = $RoadManager/HighwayContainer
+@onready var root_road: RoadPoint = $RoadManager/HighwayContainer/Root
 
 var generated_segments = []
 var generated_buildings = []
 var rng = RandomNumberGenerator.new()
 
+
 func _ready():
+	
 	populate_options_values()
 	run()
-	
-func _process(delta: float) -> void:
-	draw()
+
 	
 func draw():
 	for segment in generated_segments:
 		var width = Options.HIGHWAY_SEGMENT_WIDTH if segment.metadata.highway else Options.NORMAL_SEGMENT_WIDTH
 		var s = DebugDraw3D.scoped_config().set_thickness(width/4)
-		DebugDraw3D.draw_line(Vector3(segment.start.x, 0, segment.start.y), Vector3(segment.end.x, 0, segment.end.y),Color8(161, 175, 165))
+		DebugDraw3D.draw_arrow(Vector3(segment.start.x, 0, segment.start.y), Vector3(segment.end.x, 0, segment.end.y),Color8(161, 175, 165),.2)
+
 	for building in generated_buildings:
 		var corners2d = building.generate_corners() as PackedVector2Array
 		corners2d.append(corners2d[0])
@@ -32,7 +42,93 @@ func draw():
 			corners3d.append(Vector3(corner.x, 0, corner.y))
 		var s = DebugDraw3D.scoped_config().set_thickness(2)
 		DebugDraw3D.draw_line_path(corners3d, Color8(12, 22, 31))
+		
 
+func getBestSegment(curr, filteredLinks) -> Segment:
+	var bestNextSegment = filteredLinks.reduce(
+		func(mini, val): 
+			return val if (
+				Math.min_degree_difference(curr.direction, val.direction) < mini.direction
+				) else mini) if filteredLinks.size() > 0 else null
+	return bestNextSegment
+	
+
+func generateHighwayRoadPoint(segment_position: Vector3, direction):
+	var new_rp = RoadPoint.new()
+	
+	
+	match direction:
+		RoadPoint.PointInit.NEXT:
+			var target_point = highway_container.get_children().back()
+			highway_container.add_child(new_rp)
+			new_rp.copy_settings_from(target_point)
+			new_rp.global_position = segment_position
+			var _res_next = new_rp.connect_roadpoint(RoadPoint.PointInit.NEXT, target_point, RoadPoint.PointInit.PRIOR)
+			
+		RoadPoint.PointInit.PRIOR:
+			var target_point = highway_container.get_children().front()
+			highway_container.add_child(new_rp)
+			new_rp.copy_settings_from(target_point)
+			new_rp.global_position = segment_position
+			var _res_prior = new_rp.connect_roadpoint(RoadPoint.PointInit.PRIOR, target_point, RoadPoint.PointInit.NEXT)
+			highway_container.move_child(new_rp, 0)
+
+
+
+func generateRightByLinks(rootSegment : Segment):
+	
+	var currSegment = rootSegment
+	
+	var links = currSegment.links_f
+	var filteredLinks = links.filter(func(seg: Segment): return seg.metadata.highway)
+	var bestNextSegment = getBestSegment(currSegment, filteredLinks)
+	
+	while(currSegment != null):
+		links = currSegment.links_f
+		filteredLinks = links.filter(func(seg: Segment): return seg.metadata.highway)
+		bestNextSegment = getBestSegment(currSegment, filteredLinks)
+		if (bestNextSegment == null):
+			return
+		generateHighwayRoadPoint(Vector3(currSegment.end.x, 0, currSegment.end.y), RoadPoint.PointInit.NEXT)
+		currSegment = bestNextSegment
+		
+		
+
+# TODO: FIX THIS LMAO
+func generateLeftByLinks(rootSegment : Segment):
+	
+	var currSegment = rootSegment
+	
+	var links = currSegment.links_b
+	var filteredLinks = links.filter(func(seg: Segment): return seg.metadata.highway)
+	var bestNextSegment = getBestSegment(currSegment, filteredLinks)
+	
+	while(currSegment != null):
+		links = currSegment.links_b
+		filteredLinks = links.filter(func(seg: Segment): return seg.metadata.highway)
+		bestNextSegment = getBestSegment(currSegment, filteredLinks)
+		if (bestNextSegment == null):
+			return
+		generateHighwayRoadPoint(Vector3(currSegment.start.x, 0, currSegment.start.y), RoadPoint.PointInit.PRIOR)
+		currSegment = bestNextSegment
+	
+func generateHighways():
+	#var width = Options.HIGHWAY_SEGMENT_WIDTH if generated_segments[i].metadata.highway else Options.NORMAL_SEGMENT_WIDTH
+	var filteredHighways = generated_segments.filter(
+		func(segment: Segment): return segment.metadata.highway)
+		
+	#TODO: Prior doesn't work
+	#generateRightByLinks(filteredHighways[0])
+	generateLeftByLinks(filteredHighways[0])
+		
+func generate_roads():
+	highway_container._auto_refresh = false
+	generateHighways()
+	highway_container.rebuild_segments(false)
+	
+func _process(delta: float) -> void:
+	draw()
+	
 func run():
 	for segment in generated_segments:
 		segment.free()
@@ -51,7 +147,8 @@ func run():
 
 	print("World seed: ", Options.WORLD_SEED)
 	refresh_world_seed_display()
-
+	
+	generate_roads()
 
 
 ### GENERATE BUTTON & TOGGLES ###
