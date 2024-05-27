@@ -309,11 +309,10 @@ func emit_transform(low_poly=false):
 		return
 	if auto_lanes:
 		assign_lanes()
-	var _gizmo:Node3DGizmo = get_gizmos().front()
-	if is_instance_valid(_gizmo):
+	if len(get_gizmos()) > 0 and is_instance_valid(get_gizmos()[0]):
+		var _gizmo:Node3DGizmo = get_gizmos()[0]
 		_gizmo.get_plugin().refresh_gizmo(_gizmo)
 	emit_signal("on_transform", self, low_poly)
-
 
 # ------------------------------------------------------------------------------
 # Utilities

@@ -494,6 +494,7 @@ edge_rp_locals = Array[NodePath]([NodePath("Root"), NodePath("Root")])
 edge_rp_local_dirs = Array[int]([0, 1])
 
 [node name="Root" type="Node3D" parent="RoadManager/HighwayContainer"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)
 script = ExtResource("10_ckuoa")
 traffic_dir = [2, 2, 1, 1]
 lanes = [2, 4, 4, 2]
