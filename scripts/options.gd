@@ -27,7 +27,7 @@ extends Node2D
 # only place 'highway' segments when the population is high enough
 @export var HIGHWAY_BRANCH_POPULATION_THRESHOLD := 0.5
 # allow a segment to intersect with an existing segment within this distance
-@export var MAX_SNAP_DISTANCE := 50 # world units
+@export var MAX_SNAP_DISTANCE := 70 # world units
 # the maximum distance that a building can be placed from a selected segment
 @export var MAX_BUILDING_DISTANCE_FROM_SEGMENT := 400.0 # world units
 
@@ -35,7 +35,7 @@ extends Node2D
 # normal segment width
 @export var NORMAL_SEGMENT_WIDTH := 10 # world units
 # highway segment width
-@export var HIGHWAY_SEGMENT_WIDTH := 35 # world units
+@export var HIGHWAY_SEGMENT_WIDTH := 25 # world units
 # optional world generation seed (integer) -
 # used for heatmap, segments and buildings BUT only recreates the same world for a given set of options (see above)
 @export var WORLD_SEED := 0 # world seed (int64); 0 = randomize

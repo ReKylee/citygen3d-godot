@@ -275,6 +275,154 @@ func get_segments() -> Array:
 			segs.append(pt_ch)
 	return segs
 
+## Recursively gets all RoadContainers within a root node
+func get_all_road_containers(root: Node)->Array:
+	var nodes: Array = []
+	var dist: float
+
+	for n in root.get_children():
+		if n.get_child_count() > 0:
+			if n.has_method("is_road_container"):
+				nodes.append(n)
+			nodes.append_array(get_all_road_containers(n))
+		else:
+			if n.has_method("is_road_container"):
+				nodes.append(n)
+	return nodes
+
+## Snaps a RoadContainer's RoadPoint to a target RoadPoint
+## and moves the RoadContainer along with it.
+func snap_to_road_point(sel_rp: RoadPoint, tgt_rp: RoadPoint):
+	# Add a placeholder at selected RoadPoint position
+	var rc_par = get_parent()
+	var spa_sel_rp: Marker3D = Marker3D.new()
+	rc_par.add_child(spa_sel_rp)
+	spa_sel_rp.global_transform = sel_rp.global_transform
+
+	# Add a placeholder at RoadContainer position and
+	# make it a child of RoadPoint placeholder
+	var spa_sel_rc: Marker3D = Marker3D.new()
+	spa_sel_rp.add_child(spa_sel_rc)
+	spa_sel_rc.global_transform = global_transform
+
+	# Set RoadPoint placeholder transform to Target RoadPoint transform
+	spa_sel_rp.global_transform = tgt_rp.global_transform
+
+	# Add 180 degrees to Y rotation if needed
+	var is_prior_prior: bool = sel_rp.next_pt_init and tgt_rp.next_pt_init
+	var is_next_next: bool = sel_rp.prior_pt_init and tgt_rp.prior_pt_init
+	if is_prior_prior or is_next_next:
+		var basis_y = spa_sel_rp.global_transform.basis.y
+		spa_sel_rp.rotate(basis_y, PI)
+
+	# Apply RoadContainer placeholder's new transform to actual RoadContainer
+	global_transform = spa_sel_rc.global_transform
+
+	# Cleanup
+	spa_sel_rp.remove_child(spa_sel_rc)
+	spa_sel_rc.queue_free()
+	rc_par.remove_child(spa_sel_rp)
+	spa_sel_rp.queue_free()
+
+
+## Get edge RoadPoint closest to input 3D position.
+func get_closest_edge_road_point(g_search_pos: Vector3)->RoadPoint:
+	var closest_rp: RoadPoint
+	var closest_dist: float
+
+	for rp in get_open_edges():
+		var this_dist = g_search_pos.distance_squared_to(rp.global_translation)
+		if not closest_dist or this_dist < closest_dist:
+			closest_dist = this_dist
+			closest_rp = rp
+	return closest_rp
+
+
+# Get Edge RoadPoints that are open and available for connections
+func get_open_edges()->Array:
+	var rp_edges: Array = []
+	for idx in len(edge_rp_locals):
+		var edge: RoadPoint = get_node_or_null(edge_rp_locals[idx])
+		var connected: RoadPoint = get_node_or_null(edge_rp_targets[idx])
+		if connected:
+			# Edge is already connected
+			continue
+		elif edge and edge.terminated:
+			# Edge is terminated
+			continue
+		elif edge:
+			# Edge is available for connections
+			rp_edges.append(edge)
+		else:
+			# Edge is non-existent
+			continue
+	return rp_edges
+
+
+# Get Edge RoadPoints that are unavailable for connections. Returns
+# local Edges, target Edges, and target containers.
+func get_connected_edges()->Array:
+	var rp_edges: Array = []
+	for idx in len(edge_rp_locals):
+		var edge: RoadPoint = get_node_or_null(edge_rp_locals[idx])
+		var target_cont: RoadContainer = get_node_or_null(edge_containers[idx])
+#		var is_scene =
+		# Find out if the target container is a scene
+		if target_cont and target_cont.filename:
+			print("%s %s is a scene %s" % [Time.get_ticks_msec(), target_cont.name, target_cont.filename])
+#		else:
+#			print("target_cont is null")
+		if not target_cont:
+			continue
+		var target: RoadPoint = target_cont.get_node_or_null(edge_rp_targets[idx])
+		if target and edge:
+			# Edge is already connected
+			rp_edges.append([edge, target, target_cont])
+		elif edge and edge.terminated:
+			# Edge is terminated
+			continue
+		elif edge:
+			# Edge is available for connections
+			continue
+		else:
+			# Edge is non-existent
+			continue
+	return rp_edges
+
+## Returns array of connected Edges that are not in a nested scene.
+func get_moving_edges()->Array:
+	var rp_edges: Array = []
+	for rp in get_connected_edges():
+		var edge: RoadPoint = rp[0]
+		var target: RoadPoint = rp[1]
+		var target_cont: RoadContainer = rp[2]
+		# Skip Edge if target container is nested scene
+		if target_cont and target_cont.is_subscene():
+			continue
+		# Add Edge to list
+		rp_edges.append([edge, target, target_cont])
+	return rp_edges
+
+
+## Moves RoadPoints connected to this container if this is
+## a nested scene and target is not a nested scene.
+func move_connected_road_points():
+	# Bail if this is not a nested scene
+	if not is_subscene():
+		return
+	# Iterate only moving RoadPoints
+	for rp in get_moving_edges():
+		var sel_rp: RoadPoint = rp[0]
+		var tgt_rp: RoadPoint = rp[1]
+		# Move connected RoadPoint
+		tgt_rp.global_transform = sel_rp.global_transform
+
+		# Add 180 degrees to Y rotation if needed
+		var is_prior_prior: bool = sel_rp.next_pt_init and tgt_rp.next_pt_init
+		var is_next_next: bool = sel_rp.prior_pt_init and tgt_rp.prior_pt_init
+		if is_prior_prior or is_next_next:
+			var basis_y = sel_rp.global_transform.basis.y
+			sel_rp.rotate(basis_y, PI)
 
 ## Update export variable lengths and counts to account for connection to
 ## other RoadContainers
@@ -569,7 +717,7 @@ func snap_and_update(rp_a: Node, rp_b: Node) -> void:
 	tgt_pt._is_internal_updating = false
 	tgt_pt._is_internal_updating = false
 	# Trigger emit_transform only once
-	# tgt_pt.emit_transform() causes crashing, but is *definitely* in need of refreshing.
+	#tgt_pt.emit_transform() # causes crashing, but is *definitely* in need of refreshing.
 
 
 ## Create a new road segment based on input prior and next RoadPoints.

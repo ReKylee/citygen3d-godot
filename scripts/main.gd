@@ -60,10 +60,12 @@ func generate_roads():
 			var cont = seglink.container as RoadContainer
 			var link_road_end = seglink.road_end as RoadPoint
 			link_road_end.connect_container(RoadPoint.PointInit.PRIOR, segment.road_start, RoadPoint.PointInit.NEXT)
+			cont.snap_and_update(link_road_end, segment.road_start)
 		for seglink in links_f:
 			var cont = seglink.container as RoadContainer
 			var link_road_start = seglink.road_start as RoadPoint
 			link_road_start.connect_container(RoadPoint.PointInit.NEXT, segment.road_end, RoadPoint.PointInit.PRIOR)
+			#cont.snap_and_update(link_road_start, segment.road_end)
 			
 	road_manager.rebuild_all_containers()
 	

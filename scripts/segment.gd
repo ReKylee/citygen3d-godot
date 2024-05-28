@@ -75,12 +75,11 @@ class Segment extends Object:
 		road_start.rotation_degrees.y = self.direction
 		road_end.rotation_degrees.y = self.direction
 		
-		
-		
 		container.global_position = Vector3(self.start.x, 0, self.start.y)
 		road_start.global_position = Vector3(self.start.x, 0, self.start.y)
 		road_end.global_position = Vector3(self.end.x, 0, self.end.y)
 		road_start.connect_roadpoint(RoadPoint.PointInit.NEXT, road_end, RoadPoint.PointInit.PRIOR)
+		
 		return container
 		
 	func create_physics_shape() -> RID:
