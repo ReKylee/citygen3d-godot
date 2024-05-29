@@ -12,7 +12,8 @@ const SegmentMetadata = seg_mod.SegmentMetadata
 @onready var population_heatmap = $CityGen/PopulationHeatmap
 @onready var options_menu = $UI/OptionsDialogue
 
-@onready var road_manager: RoadManager = $RoadManager
+@onready var road_manager: RoadManager = %RoadManager
+var streets : Dictionary = {}
 
 var generated_segments = []
 var generated_buildings = []
@@ -23,17 +24,28 @@ func _ready():
 	
 	populate_options_values()
 	run()
-func _process(delta: float) -> void:
-	#draw()
-	pass
-	
-func draw():
 	for segment in generated_segments:
+		var text = Label3D.new()
+		add_child(text)
+		text.font_size = 80
+		text.rotation_degrees.y = -segment.direction
+		text.text = str(segment.direction)
+		text.global_position = Vector3(segment.start.x, 0, segment.start.y)
+		
+		
+func _process(delta: float) -> void:
+	seed(0)
+	draw(generated_segments, [],Color8(161, 175, 165))
+	for s in streets.keys():
+		draw(streets[s], [], Color8(randi_range(0, 255),randi_range(0, 255),255) )
+	
+func draw(segs, builds, color):
+	for segment in segs:
 		var width = Options.HIGHWAY_SEGMENT_WIDTH if segment.metadata.highway else Options.NORMAL_SEGMENT_WIDTH
 		var s = DebugDraw3D.scoped_config().set_thickness(width/4)
-		DebugDraw3D.draw_arrow(Vector3(segment.start.x, 0, segment.start.y), Vector3(segment.end.x, 0, segment.end.y),Color8(161, 175, 165),.2)
+		DebugDraw3D.draw_arrow(Vector3(segment.start.x, 0, segment.start.y), Vector3(segment.end.x, 0, segment.end.y),color,.2)
 
-	for building in generated_buildings:
+	for building in builds:
 		var corners2d = building.generate_corners() as PackedVector2Array
 		corners2d.append(corners2d[0])
 		var corners3d : PackedVector3Array
@@ -41,36 +53,59 @@ func draw():
 			corners3d.append(Vector3(corner.x, 0, corner.y))
 		var s = DebugDraw3D.scoped_config().set_thickness(2)
 		DebugDraw3D.draw_line_path(corners3d, Color8(12, 22, 31))
-		
 
+func getSegmentInThisDirection(curr, links) -> Segment:
+	var best_segment = links.reduce(
+		func(mini, val): 
+			return val if (
+				angle_difference(curr.direction, val.direction) < angle_difference(val.direction, mini.direction)
+				) else mini) if links.size() > 0 else null
+	return best_segment
+
+#TODO: Fix this lol. doesnt work at all 
 func generate_roads():
-
-	for segment in generated_segments:
-		var segment_container = segment.connect_road_points(road_manager) as RoadContainer
+	var current = generated_segments[0]
+	var i = 0
+	while(current != null):
+		var current_road = create_branch_array(current) as Array
+		streets[i] = current_road
+		i += 1
+		var ind = generated_segments.find(current_road.back())
+		current = generated_segments[ind]
+		if(ind == -1 || ind >= generated_segments.size()-1):
+			break
 		
-	for segment in generated_segments:
-		var this_container = segment.container
-		var links_b = segment.links_b
-		var links_f = segment.links_f
-		if(links_b.size() == 0):
-			return
-		if(links_f.size() == 0):
-			return
-		for seglink in links_b:
-			var cont = seglink.container as RoadContainer
-			var link_road_end = seglink.road_end as RoadPoint
-			link_road_end.connect_container(RoadPoint.PointInit.PRIOR, segment.road_start, RoadPoint.PointInit.NEXT)
-			cont.snap_and_update(link_road_end, segment.road_start)
-		for seglink in links_f:
-			var cont = seglink.container as RoadContainer
-			var link_road_start = seglink.road_start as RoadPoint
-			link_road_start.connect_container(RoadPoint.PointInit.NEXT, segment.road_end, RoadPoint.PointInit.PRIOR)
-			#cont.snap_and_update(link_road_start, segment.road_end)
-			
-	road_manager.rebuild_all_containers()
+func create_branch_array(root_segment: Segment):
+	var current_segment = root_segment
+	var branch_array = []
 	
+	while(current_segment != null):
+		var links_f = current_segment.links_f as Array[Segment]  # Use current_segment here
+		var links_f_size = links_f.size()
 
-	
+		if links_f_size == 0:
+			branch_array.append(current_segment)
+			break
+
+		if links_f_size == 1:
+			branch_array.append(current_segment)
+			current_segment = links_f[0]
+			continue
+
+		var best = getSegmentInThisDirection(current_segment, links_f)
+		if(best == null):
+			break
+		var min_degree_diff = angle_difference(current_segment.direction, best.direction)
+		
+		if(min_degree_diff < rad_to_deg(Options.STRAIGHT_ANGLE_DEVIATION)):
+			branch_array.append(current_segment)
+			current_segment = best
+			continue
+		else:
+			branch_array.append(current_segment)
+			break  
+
+	return branch_array
 	
 func run():
 	for child in road_manager.get_children():

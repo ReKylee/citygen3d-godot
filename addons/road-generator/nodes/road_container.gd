@@ -30,6 +30,9 @@ const RoadSegment = preload("res://addons/road-generator/nodes/road_segment.gd")
 @export var draw_lanes_editor := false: get = _get_draw_lanes_editor, set = _set_draw_lanes_editor
 @export var draw_lanes_game := false: get = _get_draw_lanes_game, set = _set_draw_lanes_game
 
+
+
+
 ## Auto generated exposed variables used to connect this RoadContainer to
 ## another RoadContainer.
 ## These should *never* be manually adjusted, they are only export vars to
@@ -78,7 +81,7 @@ var _manager:RoadManager
 # Edge-related error state
 var _edge_error: String = ""
 
-
+var csgcombiner = null
 # ------------------------------------------------------------------------------
 # Setup and export setter/getters
 # ------------------------------------------------------------------------------
@@ -87,7 +90,7 @@ var _edge_error: String = ""
 func _ready():
 	# setup_road_container won't work in _ready unless call_deferred is used
 	call_deferred("setup_road_container")
-
+	
 	# Per below, this is technicaly redundant/not really doing anything.
 	_dirty = true
 	call_deferred("_dirty_rebuild_deferred")
@@ -290,6 +293,7 @@ func get_all_road_containers(root: Node)->Array:
 				nodes.append(n)
 	return nodes
 
+
 ## Snaps a RoadContainer's RoadPoint to a target RoadPoint
 ## and moves the RoadContainer along with it.
 func snap_to_road_point(sel_rp: RoadPoint, tgt_rp: RoadPoint):
@@ -404,6 +408,7 @@ func get_moving_edges()->Array:
 	return rp_edges
 
 
+
 ## Moves RoadPoints connected to this container if this is
 ## a nested scene and target is not a nested scene.
 func move_connected_road_points():
@@ -423,7 +428,7 @@ func move_connected_road_points():
 		if is_prior_prior or is_next_next:
 			var basis_y = sel_rp.global_transform.basis.y
 			sel_rp.rotate(basis_y, PI)
-
+			
 ## Update export variable lengths and counts to account for connection to
 ## other RoadContainers
 func update_edges():
@@ -885,7 +890,7 @@ func segment_rebuild(road_segment:RoadSegment):
 ## Adds points, segments, and material if they're unassigned
 func setup_road_container():
 	use_lowpoly_preview = true
-
+	
 	# In order for points and segments to show up in the Scene dock, they must
 	# be assigned an "owner". Use the RoadContainer's owner. But, the RoadContainer
 	# won't have an owner if it is the scene root. In that case, make the

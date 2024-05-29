@@ -1,7 +1,7 @@
 extends Node2D
 
 # generate this number of segments - a higher limit produces larger networks
-@export var SEGMENT_COUNT_LIMIT := 2000
+@export var SEGMENT_COUNT_LIMIT := 100
 # the number of buildings to generate per selected segment
 @export var BUILDING_COUNT_PER_SEGMENT := 10
 # select every nth segment to place buildings around - a lower period produces denser building placement
@@ -33,9 +33,9 @@ extends Node2D
 
 # New config options in https://github.com/okorn-src/citygen-godot/
 # normal segment width
-@export var NORMAL_SEGMENT_WIDTH := 10 # world units
+@export var NORMAL_SEGMENT_WIDTH := 2 # world units
 # highway segment width
-@export var HIGHWAY_SEGMENT_WIDTH := 25 # world units
+@export var HIGHWAY_SEGMENT_WIDTH := 3 # world units
 # optional world generation seed (integer) -
 # used for heatmap, segments and buildings BUT only recreates the same world for a given set of options (see above)
 @export var WORLD_SEED := 0 # world seed (int64); 0 = randomize

@@ -1,12 +1,35 @@
-[gd_scene load_steps=10 format=3 uid="uid://ce0u7t3kimtq3"]
+[gd_scene load_steps=19 format=3 uid="uid://ce0u7t3kimtq3"]
 
 [ext_resource type="Script" path="res://scripts/city_gen.gd" id="1"]
 [ext_resource type="Environment" uid="uid://bvqmbthchilrd" path="res://default_env.tres" id="2_3kr3h"]
+[ext_resource type="PackedScene" uid="uid://c3ixqkc6k13yi" path="res://addons/gevp/scenes/vehicle_controller.tscn" id="2_d8fjq"]
+[ext_resource type="PackedScene" uid="uid://fo6kt54q87tf" path="res://addons/gevp/scenes/arcade_car.tscn" id="2_ndsfw"]
+[ext_resource type="Script" path="res://addons/gevp/scripts/camera.gd" id="2_r0825"]
 [ext_resource type="Texture2D" uid="uid://dsr7jn2nmwvs4" path="res://heatmap.tres" id="3"]
 [ext_resource type="Script" path="res://scripts/heatmap.gd" id="4"]
+[ext_resource type="PackedScene" uid="uid://h6vdpba71kpr" path="res://addons/gevp/scenes/smoke_effect.tscn" id="4_aunh2"]
 [ext_resource type="Script" path="res://scripts/main.gd" id="6"]
 [ext_resource type="Script" path="res://addons/debug_camera/scripts/DebugCamera3D.gd" id="6_w1sin"]
 [ext_resource type="Script" path="res://addons/road-generator/nodes/road_manager.gd" id="7_4b8pu"]
+[ext_resource type="Script" path="res://Shaders/DirectionalLight3D.gd" id="7_hpbh4"]
+[ext_resource type="PackedScene" uid="uid://cvh0fwg53wpus" path="res://car.tscn" id="8_sldod"]
+[ext_resource type="Shader" path="res://Shaders/Pixel.gdshader" id="9_5ybp3"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_68itn"]
+render_priority = 0
+shader = ExtResource("9_5ybp3")
+shader_parameter/depth_threshold = 0.05
+shader_parameter/reverse_depth_threshold = 0.25
+shader_parameter/normal_threshold = 0.6
+shader_parameter/darken_amount = 0.3
+shader_parameter/lighten_amount = 1.5
+shader_parameter/normal_edge_bias = Vector3(1, 1, 1)
+shader_parameter/light_direction = Vector3(0, -0.678096, -0.734974)
+
+[sub_resource type="QuadMesh" id="QuadMesh_kokmv"]
+material = SubResource("ShaderMaterial_68itn")
+flip_faces = true
+size = Vector2(2, 2)
 
 [sub_resource type="BoxMesh" id="BoxMesh_xd5lc"]
 size = Vector3(100000, 1, 100000)
@@ -21,19 +44,79 @@ script = ExtResource("6")
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = ExtResource("2_3kr3h")
 
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.734974, 0.678096, 0, -0.678096, 0.734974, 0, 186, 0)
+script = ExtResource("7_hpbh4")
+
+[node name="RoadManager" type="Node3D" parent="." groups=["Road"]]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, -2)
+script = ExtResource("7_4b8pu")
+density = 30.0
+auto_refresh = false
+
 [node name="DebugCamera3D" type="Camera3D" parent="."]
 current = true
+size = 100.0
 script = ExtResource("6_w1sin")
 
-[node name="CityGen" type="Node2D" parent="."]
-script = ExtResource("1")
-
-[node name="PopulationHeatmap" type="Sprite2D" parent="CityGen"]
+[node name="Camera3D" type="Camera3D" parent="." node_paths=PackedStringArray("follow_this")]
+transform = Transform3D(1, 0, 0, 0, 0.989776, 0.142629, 0, -0.142629, 0.989776, 4.05282, 98.583, 103.801)
 visible = false
-modulate = Color(0.0980392, 0.52549, 0.0627451, 1)
-scale = Vector2(500, 500)
-texture = ExtResource("3")
-script = ExtResource("4")
+script = ExtResource("2_r0825")
+follow_distance = 20
+follow_height = 20
+speed = 30.0
+follow_this = NodePath("../VehicleController/VehicleRigidBody")
+
+[node name="PostProcessing" type="MeshInstance3D" parent="Camera3D"]
+unique_name_in_owner = true
+visible = false
+mesh = SubResource("QuadMesh_kokmv")
+
+[node name="Car" parent="." instance=ExtResource("8_sldod")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, -2)
+visible = false
+acceleration = 50.0
+
+[node name="VehicleController" parent="." node_paths=PackedStringArray("vehicle_node") instance=ExtResource("2_d8fjq")]
+vehicle_node = NodePath("VehicleRigidBody")
+
+[node name="VehicleRigidBody" parent="VehicleController" node_paths=PackedStringArray("front_left_wheel", "front_right_wheel", "rear_left_wheel", "rear_right_wheel") instance=ExtResource("2_ndsfw")]
+front_left_wheel = NodePath("WheelFrontLeft")
+front_right_wheel = NodePath("WheelFrontRight")
+rear_left_wheel = NodePath("WheelRearLeft")
+rear_right_wheel = NodePath("WheelRearRight")
+steering_slip_assist = 0.5
+countersteer_assist = 0.75
+max_steering_angle = 1.2
+throttle_speed = 30.0
+stability_yaw_engage_angle = 0.1
+max_torque = 800.0
+final_drive = 4.1
+
+[node name="Smoke" parent="VehicleController/VehicleRigidBody" node_paths=PackedStringArray("vehicle") instance=ExtResource("4_aunh2")]
+vehicle = NodePath("..")
+
+[node name="Ground" type="CSGMesh3D" parent="." groups=["Grass"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3, 0)
+use_collision = true
+mesh = SubResource("BoxMesh_xd5lc")
+material = SubResource("StandardMaterial3D_0n3bj")
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="SubViewportContainer"]
+handle_input_locally = false
+size = Vector2i(1920, 1080)
+render_target_update_mode = 0
 
 [node name="UI" type="CanvasLayer" parent="."]
 
@@ -45,6 +128,8 @@ anchor_bottom = 1.0
 offset_left = 20.0
 offset_top = -40.0
 offset_right = -20.0
+grow_horizontal = 2
+grow_vertical = 0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="UI/MarginContainer"]
 layout_mode = 2
@@ -74,12 +159,12 @@ anchors_preset = 11
 anchor_left = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -202.0
-offset_top = 20.0
-offset_right = -42.0
-offset_bottom = -28.0
+offset_left = -160.0
+offset_top = 240.0
+offset_bottom = -240.0
 grow_horizontal = 0
 grow_vertical = 2
+size_flags_horizontal = 8
 
 [node name="OptionsHeading" type="RichTextLabel" parent="UI/OptionsDialogue"]
 layout_mode = 0
@@ -483,16 +568,15 @@ select_all_on_focus = true
 [node name="MainCanvasLayer" type="CanvasLayer" parent="."]
 layer = -1
 
-[node name="RoadManager" type="Node3D" parent="."]
-script = ExtResource("7_4b8pu")
-density = 30.0
-auto_refresh = false
+[node name="CityGen" type="Node2D" parent="."]
+script = ExtResource("1")
 
-[node name="CSGMesh3D" type="CSGMesh3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3, 0)
-use_collision = true
-mesh = SubResource("BoxMesh_xd5lc")
-material = SubResource("StandardMaterial3D_0n3bj")
+[node name="PopulationHeatmap" type="Sprite2D" parent="CityGen"]
+visible = false
+modulate = Color(0.0980392, 0.52549, 0.0627451, 1)
+scale = Vector2(500, 500)
+texture = ExtResource("3")
+script = ExtResource("4")
 
 [connection signal="pressed" from="UI/MarginContainer/HBoxContainer/GenerateButton" to="." method="_on_GenerateButton_pressed"]
 [connection signal="toggled" from="UI/MarginContainer/HBoxContainer/HeatmapCheckbox" to="." method="_on_HeatmapCheckbox_toggled"]

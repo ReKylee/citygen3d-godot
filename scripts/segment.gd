@@ -63,19 +63,19 @@ class Segment extends Object:
 		if n == NOTIFICATION_PREDELETE:
 			self.detach_from_physics_space()
 
-	func connect_road_points(manager: RoadManager):
+	func connect_road_points(manager: RoadContainer):
 		var width = Options.HIGHWAY_SEGMENT_WIDTH if metadata.highway else Options.NORMAL_SEGMENT_WIDTH
-		manager.add_child(container)
-		container.setup_road_container()
-		container._auto_refresh = false
-		container.add_child(road_start)
-		container.add_child(road_end)
+		#manager.add_child(container)
+		#container.setup_road_container()
+		#container._auto_refresh = false
+		manager.add_child(road_start)
+		manager.add_child(road_end)
 		road_start.lane_width = width
 		road_end.lane_width = width
 		road_start.rotation_degrees.y = self.direction
 		road_end.rotation_degrees.y = self.direction
 		
-		container.global_position = Vector3(self.start.x, 0, self.start.y)
+		#container.global_position = Vector3(self.start.x, 0, self.start.y)
 		road_start.global_position = Vector3(self.start.x, 0, self.start.y)
 		road_end.global_position = Vector3(self.end.x, 0, self.end.y)
 		road_start.connect_roadpoint(RoadPoint.PointInit.NEXT, road_end, RoadPoint.PointInit.PRIOR)

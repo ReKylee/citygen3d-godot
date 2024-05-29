@@ -46,6 +46,7 @@ const COLOR_YELLOW = Color(0.7, 0.7, 0,7)
 const COLOR_RED = Color(0.7, 0.3, 0.3)
 const SEG_DIST_MULT: float = 8.0 # How many road widths apart to add next RoadPoint.
 
+
 # Assign the direction of traffic order. This i
 @export var traffic_dir:Array: get = _get_dir, set = _set_dir # (Array, LaneDir)
 
@@ -66,6 +67,7 @@ const SEG_DIST_MULT: float = 8.0 # How many road widths apart to add next RoadPo
 # Path to next/prior RoadPoint, relative to this RoadPoint itself.
 @export var prior_pt_init: NodePath: get = _get_prior_pt_init, set = _set_prior_pt_init
 @export var next_pt_init: NodePath: get = _get_next_pt_init, set = _set_next_pt_init
+@export var terminated := false
 # Handle magniture
 @export var prior_mag := 5.0: get = _get_prior_mag, set = _set_prior_mag
 @export var next_mag := 5.0: get = _get_next_mag, set = _set_next_mag
